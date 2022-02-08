@@ -80,8 +80,8 @@ public class Calendar_frame{
         currentYear = realYear;
         
         //Add headers
-        String[] headers = {"Hétfõ", "Kedd", "Szerda", "Csütörtök", "Péntek", "Szombat", "Vasárnap"}; //All headers
-        for (int i=0; i<7; i++){
+        String[] headers = {"Idõ", "Hétfõ", "Kedd", "Szerda", "Csütörtök", "Péntek", "Szombat", "Vasárnap"}; //All headers
+        for (int i=0; i<8; i++){
             mtblCalendar.addColumn(headers[i]);
         }
         
@@ -103,8 +103,8 @@ public class Calendar_frame{
         lblMonth.setHorizontalAlignment(SwingConstants.CENTER);
         lblMonth.setBounds(209, 25, 180, 25);
         pnlCalendar.add(lblMonth);
-        mtblCalendar.setColumnCount(7);
-        mtblCalendar.setRowCount(6);
+        mtblCalendar.setColumnCount(8);
+        mtblCalendar.setRowCount(24);
         
         //Populate table
         for (int i=realYear-100; i<=realYear+100; i++){
@@ -153,7 +153,7 @@ public class Calendar_frame{
     static class tblCalendarRenderer extends DefaultTableCellRenderer{
         public Component getTableCellRendererComponent (JTable table, Object value, boolean selected, boolean focused, int row, int column){
             super.getTableCellRendererComponent(table, value, selected, focused, row, column);
-            if (column == 5 || column == 6){ //Week-end
+            if (column == 6 || column == 7){ //Week-end
                 setBackground(new Color(255, 220, 220));
             }
             else{ //Week

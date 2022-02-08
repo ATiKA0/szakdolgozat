@@ -49,7 +49,10 @@
 	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/Szakdolgozat/szakdolgozat/lib/jool-java-8-0.9.14.jar"/>
 	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/Szakdolgozat/szakdolgozat/lib/threeten-extra-1.5.0.jar"/>
 	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/Szakdolgozat/szakdolgozat/lib/slf4j-api-1.7.32.jar"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/ical4"/>
 	<classpathentry kind="lib" path="lib/JPlanner.jar"/>
+	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/jar_files (1)/ical4j-4.0.0-alpha11.jar"/>
+	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/jcalendar-1.4 (1).jar"/>
+	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/jcalendar-1.4-javadoc.jar"/>
+	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/jcalendar-1.4-sources.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
