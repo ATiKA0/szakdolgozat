@@ -6,43 +6,6 @@
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/selenium-java-4.1.0/selenium-support-4.1.0-sources.jar"/>
-	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/selenium-java-4.1.0/selenium-api-4.1.0.jar"/>
-	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/selenium-java-4.1.0/selenium-api-4.1.0-sources.jar"/>
-	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/selenium-java-4.1.0/selenium-chrome-driver-4.1.0.jar"/>
-	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/selenium-java-4.1.0/selenium-chrome-driver-4.1.0-sources.jar"/>
-	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/selenium-java-4.1.0/selenium-chromium-driver-4.1.0.jar"/>
-	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/selenium-java-4.1.0/selenium-chromium-driver-4.1.0-sources.jar"/>
-	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/selenium-java-4.1.0/selenium-devtools-v85-4.1.0.jar"/>
-	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/selenium-java-4.1.0/selenium-devtools-v85-4.1.0-sources.jar"/>
-	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/selenium-java-4.1.0/selenium-devtools-v94-4.1.0.jar"/>
-	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/selenium-java-4.1.0/selenium-devtools-v94-4.1.0-sources.jar"/>
-	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/selenium-java-4.1.0/selenium-devtools-v95-4.1.0.jar"/>
-	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/selenium-java-4.1.0/selenium-devtools-v95-4.1.0-sources.jar"/>
-	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/selenium-java-4.1.0/selenium-devtools-v96-4.1.0.jar"/>
-	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/selenium-java-4.1.0/selenium-devtools-v96-4.1.0-sources.jar"/>
-	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/selenium-java-4.1.0/selenium-edge-driver-4.1.0.jar"/>
-	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/selenium-java-4.1.0/selenium-edge-driver-4.1.0-sources.jar"/>
-	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/selenium-java-4.1.0/selenium-firefox-driver-4.1.0.jar"/>
-	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/selenium-java-4.1.0/selenium-firefox-driver-4.1.0-sources.jar"/>
-	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/selenium-java-4.1.0/selenium-firefox-xpi-driver-4.1.0.jar"/>
-	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/selenium-java-4.1.0/selenium-firefox-xpi-driver-4.1.0-sources.jar"/>
-	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/selenium-java-4.1.0/selenium-http-4.1.0.jar"/>
-	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/selenium-java-4.1.0/selenium-http-4.1.0-sources.jar"/>
-	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/selenium-java-4.1.0/selenium-ie-driver-4.1.0.jar"/>
-	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/selenium-java-4.1.0/selenium-ie-driver-4.1.0-sources.jar"/>
-	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/selenium-java-4.1.0/selenium-java-4.1.0.jar"/>
-	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/selenium-java-4.1.0/selenium-java-4.1.0-sources.jar"/>
-	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/selenium-java-4.1.0/selenium-json-4.1.0.jar"/>
-	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/selenium-java-4.1.0/selenium-json-4.1.0-sources.jar"/>
-	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/selenium-java-4.1.0/selenium-opera-driver-4.1.0.jar"/>
-	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/selenium-java-4.1.0/selenium-opera-driver-4.1.0-sources.jar"/>
-	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/selenium-java-4.1.0/selenium-remote-driver-4.1.0.jar"/>
-	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/selenium-java-4.1.0/selenium-remote-driver-4.1.0-sources.jar"/>
-	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/selenium-java-4.1.0/selenium-safari-driver-4.1.0.jar"/>
-	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/selenium-java-4.1.0/selenium-safari-driver-4.1.0-sources.jar"/>
-	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/selenium-java-4.1.0/selenium-support-4.1.0.jar"/>
-	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/htmlunit-driver-3.56.0-jar-with-dependencies.jar"/>
 	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/Szakdolgozat/szakdolgozat/lib/commons-codec-1.11.jar"/>
 	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/Szakdolgozat/szakdolgozat/lib/commons-collections4-4.1.jar"/>
 	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/Szakdolgozat/szakdolgozat/lib/commons-lang3-3.8.1.jar"/>
@@ -50,9 +13,48 @@
 	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/Szakdolgozat/szakdolgozat/lib/threeten-extra-1.5.0.jar"/>
 	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/Szakdolgozat/szakdolgozat/lib/slf4j-api-1.7.32.jar"/>
 	<classpathentry kind="lib" path="lib/JPlanner.jar"/>
-	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/jar_files (1)/ical4j-4.0.0-alpha11.jar"/>
-	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/jcalendar-1.4 (1).jar"/>
-	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/jcalendar-1.4-javadoc.jar"/>
-	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/jcalendar-1.4-sources.jar"/>
+	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/Szakdolgozat/szakdolgozat/lib/htmlunit-driver-3.56.0-jar-with-dependencies.jar"/>
+	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/Szakdolgozat/szakdolgozat/lib/ical4j-4.0.0-alpha11.jar"/>
+	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/Szakdolgozat/szakdolgozat/lib/JPlanner.jar"/>
+	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/Szakdolgozat/szakdolgozat/lib/selenium-api-4.1.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/Szakdolgozat/szakdolgozat/lib/selenium-api-4.1.0-sources.jar"/>
+	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/Szakdolgozat/szakdolgozat/lib/selenium-chrome-driver-4.1.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/Szakdolgozat/szakdolgozat/lib/selenium-chrome-driver-4.1.0-sources.jar"/>
+	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/Szakdolgozat/szakdolgozat/lib/selenium-chromium-driver-4.1.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/Szakdolgozat/szakdolgozat/lib/selenium-chromium-driver-4.1.0-sources.jar"/>
+	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/Szakdolgozat/szakdolgozat/lib/selenium-devtools-v85-4.1.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/Szakdolgozat/szakdolgozat/lib/selenium-devtools-v85-4.1.0-sources.jar"/>
+	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/Szakdolgozat/szakdolgozat/lib/selenium-devtools-v94-4.1.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/Szakdolgozat/szakdolgozat/lib/selenium-devtools-v94-4.1.0-sources.jar"/>
+	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/Szakdolgozat/szakdolgozat/lib/selenium-devtools-v95-4.1.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/Szakdolgozat/szakdolgozat/lib/selenium-devtools-v95-4.1.0-sources.jar"/>
+	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/Szakdolgozat/szakdolgozat/lib/selenium-devtools-v96-4.1.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/Szakdolgozat/szakdolgozat/lib/selenium-devtools-v96-4.1.0-sources.jar"/>
+	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/Szakdolgozat/szakdolgozat/lib/selenium-edge-driver-4.1.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/Szakdolgozat/szakdolgozat/lib/selenium-edge-driver-4.1.0-sources.jar"/>
+	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/Szakdolgozat/szakdolgozat/lib/selenium-firefox-driver-4.1.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/Szakdolgozat/szakdolgozat/lib/selenium-firefox-driver-4.1.0-sources.jar"/>
+	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/Szakdolgozat/szakdolgozat/lib/selenium-firefox-xpi-driver-4.1.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/Szakdolgozat/szakdolgozat/lib/selenium-firefox-xpi-driver-4.1.0-sources.jar"/>
+	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/Szakdolgozat/szakdolgozat/lib/selenium-http-4.1.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/Szakdolgozat/szakdolgozat/lib/selenium-http-4.1.0-sources.jar"/>
+	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/Szakdolgozat/szakdolgozat/lib/selenium-ie-driver-4.1.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/Szakdolgozat/szakdolgozat/lib/selenium-ie-driver-4.1.0-sources.jar"/>
+	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/Szakdolgozat/szakdolgozat/lib/selenium-java-4.1.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/Szakdolgozat/szakdolgozat/lib/selenium-java-4.1.0-sources.jar"/>
+	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/Szakdolgozat/szakdolgozat/lib/selenium-json-4.1.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/Szakdolgozat/szakdolgozat/lib/selenium-json-4.1.0-sources.jar"/>
+	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/Szakdolgozat/szakdolgozat/lib/selenium-opera-driver-4.1.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/Szakdolgozat/szakdolgozat/lib/selenium-opera-driver-4.1.0-sources.jar"/>
+	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/Szakdolgozat/szakdolgozat/lib/selenium-remote-driver-4.1.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/Szakdolgozat/szakdolgozat/lib/selenium-remote-driver-4.1.0-sources.jar"/>
+	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/Szakdolgozat/szakdolgozat/lib/selenium-safari-driver-4.1.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/Szakdolgozat/szakdolgozat/lib/selenium-safari-driver-4.1.0-sources.jar"/>
+	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/Szakdolgozat/szakdolgozat/lib/selenium-support-4.1.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/Szakdolgozat/szakdolgozat/lib/selenium-support-4.1.0-sources.jar"/>
+	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/Szakdolgozat/szakdolgozat/lib/jcalendar-1.4.jar"/>
+	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/Szakdolgozat/szakdolgozat/lib/jgoodies-common-1.2.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/Szakdolgozat/szakdolgozat/lib/jgoodies-looks-2.4.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/Szakdolgozat/szakdolgozat/lib/junit-4.6.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
