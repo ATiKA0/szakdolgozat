@@ -21,11 +21,13 @@ import java.awt.Color;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.TimeZone;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.FileInputStream;
@@ -37,6 +39,9 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.beans.PropertyChangeEvent;
 
 import java.io.File;
@@ -59,6 +64,7 @@ import net.fortuna.ical4j.model.PropertyList;
 import net.fortuna.ical4j.model.Recur;
 import net.fortuna.ical4j.model.component.CalendarComponent;
 import net.fortuna.ical4j.model.ComponentList;
+import net.fortuna.ical4j.model.DateTime;
 import net.fortuna.ical4j.model.component.VEvent;
 import net.fortuna.ical4j.model.property.Description;
 import net.fortuna.ical4j.model.property.DtStamp;
@@ -161,24 +167,43 @@ public class CalendarFrame {
     	Calendar calendar = builder.build(sin);
 		return calendar;
     }
+    public static Date convertToNewFormat(String dateStr) throws ParseException {
+        TimeZone utc = TimeZone.getTimeZone("UTC");
+        SimpleDateFormat sourceFormat = new SimpleDateFormat("yyyyMMdd'T'HHmmss'Z'");
+        SimpleDateFormat destFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        sourceFormat.setTimeZone(utc);
+        Date convertedDate = sourceFormat.parse(dateStr);
+        return convertedDate; //destFormat.format(convertedDate);
+    }
     
-    public ComponentList<Component> importCalendar(){
+    public ArrayList<CalendarItem> importCalendar(){
     	final String ics = "C:\\Users\\gluck\\Downloads\\igen.ics";
     	try {
     	      CalendarBuilder builder = new CalendarBuilder();
     	      final UnfoldingReader ufrdr =new UnfoldingReader(new FileReader(ics),true);
     	      Calendar calendar = builder.build(ufrdr);
     	      List<CalendarComponent> events = calendar.getComponents(Component.VEVENT);
-    	      List<Appointment> appointments = new ArrayList<>();
-    	      
+    	      ArrayList<CalendarItem> sus = new ArrayList<CalendarItem>();
     	      for (CalendarComponent event : events) {
-    	  		Appointment a = new Appointment();
-    	  		
-    	  		a = addVEventPropertiestoAppointment(a, event);
-    	  		appointments.add(a);
-    	  	}
+    	    	String dtstart= event.getProperties(Property.DTSTART).toString();
+    	    	String dtend = event.getProperties(Property.DTEND).toString();
+    	    	String location = event.getProperties(Property.LOCATION).toString();
+    	    	String summary = event.getProperties(Property.SUMMARY).toString();
+    	    	String uid = event.getProperties(Property.UID).toString();
+    	    	StringBuffer dtstartf = new StringBuffer(dtstart);
+    	    	dtstartf.delete(0,9);
+    	    	dtstartf.deleteCharAt(dtstartf.length()-1);
+    	  		CalendarItem a = new CalendarItem();
+    	  		a.setDtstart(convertToNewFormat(dtstartf.toString()));
+    	  		//a.setDtend(convertToNewFormat(dtend));
+    	  		a.setLocation(location);
+    	  		a.setSummary(summary);
+    	  		a.setUid(uid);
+    	  		sus.add(a);
+    	  		System.out.println(sus.get(0).getDtstart());
+    	  		}
     	      
-    	      for (final Object o : calendar.getComponents()) {
+    	      /*for (final Object o : calendar.getComponents()) {
     	        Component component = (Component)o;
     	        sus.add((Component) comp);
     	        System.out.println("Component: " + component.getName());
@@ -187,9 +212,10 @@ public class CalendarFrame {
     	          System.out.println(
     	                  property.getName() + ": " + property.getValue());
     	        }
-    	      }
+    	      }*/
     	      return sus;
-    	    } catch (Throwable t) {
+    	    } 
+    	catch (Throwable t) {
     	      t.printStackTrace();
     	      return null;
     	    }

@@ -197,14 +197,11 @@ public class Frame_main {
 			public void actionPerformed(ActionEvent e) {
 				username = t_usrn.getText();
 				password = t_passwd.getText();
-				//export(username, password);
+				export(username, password);
 				JOptionPane.showMessageDialog(null, getNewestFile());
 				frame.setVisible(false);
 				Calendar_frame cf = new Calendar_frame();
 				cf.main(null);
-				//File fin = getNewestFile();
-				//CalendarBuilder lol = new CalendarBuilder();
-				
 			}
 		});
 		frame.getContentPane().setLayout(null);
@@ -230,7 +227,13 @@ public class Frame_main {
 			@Override
 			public void keyPressed(KeyEvent e) {
 				 if (e.getKeyCode()==KeyEvent.VK_ENTER){
-					 JOptionPane.showMessageDialog(null, getNewestFile());
+					username = t_usrn.getText();
+					password = t_passwd.getText();
+					export(username, password);
+					JOptionPane.showMessageDialog(null, getNewestFile());
+					frame.setVisible(false);
+					Calendar_frame cf = new Calendar_frame();
+					cf.main(null);
 				 }
 				 }
 		});
