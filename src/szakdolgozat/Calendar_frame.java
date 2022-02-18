@@ -1,11 +1,26 @@
 package szakdolgozat;
 
-import javax.swing.*;
-import javax.swing.event.*;
-import javax.swing.table.*;
-import java.awt.*;
-import java.awt.event.*;
-import java.util.*;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.GregorianCalendar;
+
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
+import javax.swing.SwingConstants;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
 
 public class Calendar_frame{
     static JLabel lblYear;
@@ -29,22 +44,22 @@ public class Calendar_frame{
         catch (UnsupportedLookAndFeelException e) {}
         
         //Prepare frame
-        frmMain = new JFrame ("Naptár"); //Create frame
+        frmMain = new JFrame ("Naptï¿½r"); //Create frame
         frmMain.setSize(630, 675); //Set size to 400x400 pixels
         pane = frmMain.getContentPane(); //Get content pane
         pane.setLayout(null); //Apply null layout
         frmMain.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        lblYear = new JLabel ("Év választás:");
+        lblYear = new JLabel ("ï¿½v vï¿½lasztï¿½s:");
         cmbYear = new JComboBox();
-        btnPrev = new JButton ("Elõzõ");
-        btnNext = new JButton ("Következõ");
+        btnPrev = new JButton ("Elï¿½zï¿½");
+        btnNext = new JButton ("Kï¿½vetkezï¿½");
         mtblCalendar = new DefaultTableModel(){public boolean isCellEditable(int rowIndex, int mColIndex){return false;}};
         tblCalendar = new JTable(mtblCalendar);
         stblCalendar = new JScrollPane(tblCalendar);
         pnlCalendar = new JPanel(null);
         
         //Set border
-        pnlCalendar.setBorder(BorderFactory.createTitledBorder("Naptár"));
+        pnlCalendar.setBorder(BorderFactory.createTitledBorder("Naptï¿½r"));
         
         //Register action listeners
         btnPrev.addActionListener(new btnPrev_Action());
@@ -80,7 +95,7 @@ public class Calendar_frame{
         currentYear = realYear;
         
         //Add headers
-        String[] headers = {"Idõ", "Hétfõ", "Kedd", "Szerda", "Csütörtök", "Péntek", "Szombat", "Vasárnap"}; //All headers
+        String[] headers = {"Idï¿½", "Hï¿½tfï¿½", "Kedd", "Szerda", "Csï¿½tï¿½rtï¿½k", "Pï¿½ntek", "Szombat", "Vasï¿½rnap"}; //All headers
         for (int i=0; i<8; i++){
             mtblCalendar.addColumn(headers[i]);
         }
@@ -117,7 +132,7 @@ public class Calendar_frame{
     
     public static void refreshCalendar(int month, int year){
         //Variables
-        String[] months =  {"Január", "Február", "Március", "Aprilis", "Május", "Június", "Július", "Augusztus", "Szeptember", "Október", "November", "December"};
+        String[] months =  {"Januï¿½r", "Februï¿½r", "Mï¿½rcius", "Aprilis", "Mï¿½jus", "Jï¿½nius", "Jï¿½lius", "Augusztus", "Szeptember", "Oktï¿½ber", "November", "December"};
         int nod, som; //Number Of Days, Start Of Month
         
         //Allow/disallow buttons

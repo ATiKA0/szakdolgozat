@@ -1,60 +1,36 @@
 package szakdolgozat;
 
 import java.awt.EventQueue;
-
-import javax.swing.JFrame;
-import javax.swing.JButton;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.FileFilter;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.time.ZonedDateTime;
-import java.awt.event.ActionEvent;
-import java.awt.FlowLayout;
-import java.awt.BorderLayout;
-import java.awt.GridLayout;
-import java.awt.HeadlessException;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.concurrent.TimeUnit;
 
-import javax.swing.GroupLayout;
-import javax.swing.JTextField;
-import javax.swing.JTextPane;
-import javax.swing.Box;
+import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPasswordField;
+import javax.swing.JTextField;
 
 import org.apache.commons.io.comparator.LastModifiedFileComparator;
 import org.apache.commons.io.filefilter.WildcardFileFilter;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.Keys;
 import org.openqa.selenium.UnexpectedAlertBehaviour;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import org.openqa.selenium.remote.CapabilityType;
-import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-
-import net.fortuna.ical4j.data.CalendarBuilder;
-import net.fortuna.ical4j.model.Component;
-
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.concurrent.TimeUnit;
-
-import java.awt.Font;
-import javax.swing.JPasswordField;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 
 public class Frame_main {
 
@@ -124,29 +100,29 @@ public class Frame_main {
 				alert.accept();
 				Thread.sleep(5000);
 				if(!driver.findElements(By.id("upBoxes_upCalendar_gdgCalendar_gdgCalendar_calendaroutlookexport")).isEmpty()){
-					JOptionPane.showMessageDialog(null, "Sikeres bejelentkezés!");
+					JOptionPane.showMessageDialog(null, "Sikeres bejelentkezï¿½s!");
 					return driver;
 				}
 				else {
-					JOptionPane.showMessageDialog(null, "Sikertelen bejelentkezés! Kérem próbálja újra!");
+					JOptionPane.showMessageDialog(null, "Sikertelen bejelentkezï¿½s! Kï¿½rem prï¿½bï¿½lja ï¿½jra!");
 					driver.close();				
 					System.exit(0);
 				}
 			}
 			catch(Exception e){
 				if(!driver.findElements(By.id("upBoxes_upCalendar_gdgCalendar_gdgCalendar_calendaroutlookexport")).isEmpty()){
-					JOptionPane.showMessageDialog(null, "Sikeres bejelentkezés!");
+					JOptionPane.showMessageDialog(null, "Sikeres bejelentkezï¿½s!");
 					return driver;
 				}
 				else {
-					JOptionPane.showMessageDialog(null, "Sikertelen bejelentkezés! Kérem próbálja újra!");
+					JOptionPane.showMessageDialog(null, "Sikertelen bejelentkezï¿½s! Kï¿½rem prï¿½bï¿½lja ï¿½jra!");
 					driver.close();				
 					System.exit(0);
 			}
 		}
 		}
 		else{
-			JOptionPane.showMessageDialog(null, "Az oldal nem elérhetõ! Kérem próbálja újra késõbb!");
+			JOptionPane.showMessageDialog(null, "Az oldal nem elï¿½rhetï¿½! Kï¿½rem prï¿½bï¿½lja ï¿½jra kï¿½sï¿½bb!");
 			driver.close();
 			System.exit(0);
 		}

@@ -2,8 +2,6 @@ package szakdolgozat;
 
 import java.util.Date;
 
-import net.fortuna.ical4j.model.DateTime;
-
 public class CalendarItem {
 	String Uid;
 	Date Dtstart;
@@ -11,6 +9,13 @@ public class CalendarItem {
 	String Location;
 	String Summary;
 	
+	public CalendarItem(String uid, Date dtstart, Date dtend, String location, String summary) {
+		Uid = uid;
+		Dtstart = dtstart;
+		Dtend = dtend;
+		Location = location;
+		Summary = summary;
+	}
 	public String getUid() {
 		return Uid;
 	}

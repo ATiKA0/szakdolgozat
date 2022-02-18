@@ -1,79 +1,33 @@
 package szakdolgozat;
 
-import java.awt.EventQueue;
-
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-
-import org.apache.commons.io.FileUtils;
-
-import com.mindfusion.scheduling.model.Appointment;
-import com.toedter.calendar.IDateEvaluator;
-import com.toedter.calendar.JCalendar;
-import com.toedter.calendar.JDateChooser;
-
-import net.fortuna.ical4j.data.CalendarBuilder;
-import net.fortuna.ical4j.data.ParserException;
-import net.fortuna.ical4j.util.CompatibilityHints;
-
-import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
-import java.util.TimeZone;
+import java.awt.Dimension;
+import java.awt.EventQueue;
+import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.StringReader;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.io.FileReader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.Instant;
-import java.beans.PropertyChangeEvent;
-
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
+import javax.swing.JFrame;
+
+import com.toedter.calendar.IDateEvaluator;
+import com.toedter.calendar.JCalendar;
 
 import net.fortuna.ical4j.data.CalendarBuilder;
-import net.fortuna.ical4j.data.ParserException;
 import net.fortuna.ical4j.data.UnfoldingReader;
-import net.fortuna.ical4j.model.Calendar;
 import net.fortuna.ical4j.model.Component;
 import net.fortuna.ical4j.model.Property;
-import net.fortuna.ical4j.model.PropertyContainer;
-import net.fortuna.ical4j.model.PropertyList;
-import net.fortuna.ical4j.model.Recur;
 import net.fortuna.ical4j.model.component.CalendarComponent;
-import net.fortuna.ical4j.model.ComponentList;
-import net.fortuna.ical4j.model.DateTime;
-import net.fortuna.ical4j.model.component.VEvent;
-import net.fortuna.ical4j.model.property.Description;
-import net.fortuna.ical4j.model.property.DtStamp;
-import net.fortuna.ical4j.model.property.DtStart;
-import net.fortuna.ical4j.model.property.Duration;
-import net.fortuna.ical4j.model.property.RRule;
-import net.fortuna.ical4j.model.property.Summary;
-import net.fortuna.ical4j.model.property.Uid;
-import net.fortuna.ical4j.util.CompatibilityHints;
+import javax.swing.JButton;
+import java.awt.BorderLayout;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class CalendarFrame {
 
@@ -83,6 +37,9 @@ public class CalendarFrame {
 
         public void add(Date date) {
             list.add(date);
+        }
+        public List<Date> getList() {
+        	return list;
         }
 
         @Override
@@ -97,7 +54,7 @@ public class CalendarFrame {
 
         @Override
         public Color getSpecialBackroundColor() {
-            return Color.blue;
+            return Color.green.brighter();
         }
 
         @Override
@@ -130,99 +87,86 @@ public class CalendarFrame {
      * @wbp.parser.entryPoint
      */
     private void display() {
-        JFrame f = new JFrame("Napt�r");
+        JFrame f = new JFrame("Naptár");
+        f.setResizable(true);
+        f.setMinimumSize(new Dimension(500, 400));
         f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        HighlightEvaluator evaluator = new HighlightEvaluator();
-        //evaluator.add(createDate(2022,01,14));
-        //evaluator.add(createDate(2022,00,15));
+        HighlightEvaluator evaluator = createEvaluator();
+
         JCalendar jc = new JCalendar();
-        jc.addPropertyChangeListener("calendar", new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent e) {
-            	System.setProperty("ical4j.unfolding.relaxed", "true");
-            	System.setProperty("ical4j.parsing.relaxed", "true");
-            	importCalendar();
-            }
-        });
         jc.getDayChooser().addDateEvaluator(evaluator);
+        f.getContentPane().setLayout(new BorderLayout(0, 0));
         jc.setCalendar(jc.getCalendar());
         f.getContentPane().add(jc);
+        
+        JButton btnNewItem = new JButton("Új esemény");
+        btnNewItem.addMouseListener(new MouseAdapter() {
+        	@Override
+        	public void mouseClicked(MouseEvent e) {
+        	}
+        });
+        f.getContentPane().add(btnNewItem, BorderLayout.SOUTH);
         f.pack();
         f.setLocationRelativeTo(null);
         f.setVisible(true);
-    }
+    }    
     
-    public String readFile(String string, Charset charset) throws IOException {
-        File file = new File(string);
-        return FileUtils.readFileToString(file, StandardCharsets.UTF_8);
-    }
-    
-    public Calendar parse() throws IOException, ParserException {
-    	String content = readFile("C:\\Users\\gluck\\Downloads\\igen.ics", Charset.defaultCharset());
-    	System.setProperty("ical4j.unfolding.relaxed", "true");
-    	System.setProperty("ical4j.parsing.relaxed", "true");
-    	StringReader sin = new StringReader(content);
-    	CalendarBuilder builder = new CalendarBuilder();
-    	Calendar calendar = builder.build(sin);
-		return calendar;
-    }
     public static Date convertToNewFormat(String dateStr) throws ParseException {
         TimeZone utc = TimeZone.getTimeZone("UTC");
         SimpleDateFormat sourceFormat = new SimpleDateFormat("yyyyMMdd'T'HHmmss'Z'");
-        SimpleDateFormat destFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         sourceFormat.setTimeZone(utc);
         Date convertedDate = sourceFormat.parse(dateStr);
-        return convertedDate; //destFormat.format(convertedDate);
+        return convertedDate;
+    }
+    public static String removeText(String cnv) {
+    	StringBuffer cnvf = new StringBuffer(cnv);
+    	cnvf.delete(0,cnvf.indexOf(":")+1);
+    	cnvf.deleteCharAt(cnvf.length()-1);
+		return cnvf.toString();
+    }
+    
+    public HighlightEvaluator createEvaluator(){
+    	HighlightEvaluator evaluator = new HighlightEvaluator();
+    	ArrayList<CalendarItem> callist = new ArrayList<CalendarItem>(importCalendar());
+    	for (CalendarItem event : callist) {
+    		Date sus = event.getDtstart();
+    		int y = sus.getYear()+1900;
+    		int m = sus.getMonth();
+    		int d = sus.getDate();
+    		evaluator.add(createDate(y, m, d));
+    	}
+		return evaluator;
     }
     
     public ArrayList<CalendarItem> importCalendar(){
-    	final String ics = "C:\\Users\\gluck\\Downloads\\igen.ics";
+    	final String ics = Frame_main.getNewestFile().toString();
+    	System.setProperty("ical4j.unfolding.relaxed", "true");
+    	System.setProperty("ical4j.parsing.relaxed", "true");
     	try {
     	      CalendarBuilder builder = new CalendarBuilder();
     	      final UnfoldingReader ufrdr =new UnfoldingReader(new FileReader(ics),true);
-    	      Calendar calendar = builder.build(ufrdr);
+    	      net.fortuna.ical4j.model.Calendar calendar = builder.build(ufrdr);
     	      List<CalendarComponent> events = calendar.getComponents(Component.VEVENT);
     	      ArrayList<CalendarItem> sus = new ArrayList<CalendarItem>();
     	      for (CalendarComponent event : events) {
-    	    	String dtstart= event.getProperties(Property.DTSTART).toString();
-    	    	String dtend = event.getProperties(Property.DTEND).toString();
     	    	String location = event.getProperties(Property.LOCATION).toString();
     	    	String summary = event.getProperties(Property.SUMMARY).toString();
     	    	String uid = event.getProperties(Property.UID).toString();
-    	    	StringBuffer dtstartf = new StringBuffer(dtstart);
-    	    	dtstartf.delete(0,9);
-    	    	dtstartf.deleteCharAt(dtstartf.length()-1);
-    	  		CalendarItem a = new CalendarItem();
-    	  		a.setDtstart(convertToNewFormat(dtstartf.toString()));
-    	  		//a.setDtend(convertToNewFormat(dtend));
-    	  		a.setLocation(location);
-    	  		a.setSummary(summary);
-    	  		a.setUid(uid);
-    	  		sus.add(a);
-    	  		System.out.println(sus.get(0).getDtstart());
+    	    	String dtstartf = removeText(event.getProperties(Property.DTSTART).toString());
+    	    	String dtendf = removeText(event.getProperties(Property.DTEND).toString());
+
+    	  		sus.add(new CalendarItem(removeText(uid), convertToNewFormat(dtstartf), convertToNewFormat(dtendf), removeText(location), removeText(summary)));
     	  		}
-    	      
-    	      /*for (final Object o : calendar.getComponents()) {
-    	        Component component = (Component)o;
-    	        sus.add((Component) comp);
-    	        System.out.println("Component: " + component.getName());
-    	        for (final Object o1 : component.getProperties()) {
-    	          Property property = (Property)o1;
-    	          System.out.println(
-    	                  property.getName() + ": " + property.getValue());
-    	        }
-    	      }*/
     	      return sus;
-    	    } 
+    	} 
     	catch (Throwable t) {
     	      t.printStackTrace();
     	      return null;
-    	    }
-    	  }
-    	  
+    	}
+    }
 
-    /*private Date createDate(int y, int m, int d) {
+    private Date createDate(int y, int m, int d) {
         Calendar c = Calendar.getInstance();
         c.set(Calendar.YEAR, y);
         c.set(Calendar.MONTH, m);
@@ -232,7 +176,7 @@ public class CalendarFrame {
         c.set(Calendar.SECOND, 0);
         c.set(Calendar.MILLISECOND, 0);
         return (c.getTime());
-    }*/
+    }
 
     public static void main(String[] args) {
         EventQueue.invokeLater(new CalendarFrame()::display);
