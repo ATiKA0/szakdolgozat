@@ -91,8 +91,9 @@ public class CalendarFrame {
         f.setResizable(true);
         f.setMinimumSize(new Dimension(500, 400));
         f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-        HighlightEvaluator evaluator = createEvaluator();
+        ArrayList<CalendarItem> newI = null;
+        HighlightEvaluator evaluator = createEvaluator(newI);
+        
 
         JCalendar jc = new JCalendar();
         jc.getDayChooser().addDateEvaluator(evaluator);
@@ -104,6 +105,8 @@ public class CalendarFrame {
         btnNewItem.addMouseListener(new MouseAdapter() {
         	@Override
         	public void mouseClicked(MouseEvent e) {
+        		
+        		
         	}
         });
         f.getContentPane().add(btnNewItem, BorderLayout.SOUTH);
@@ -112,6 +115,10 @@ public class CalendarFrame {
         f.setVisible(true);
     }    
     
+    public CalendarItem newItem(CalendarItem c) {
+		return c;
+    }
+    
     public static Date convertToNewFormat(String dateStr) throws ParseException {
         TimeZone utc = TimeZone.getTimeZone("UTC");
         SimpleDateFormat sourceFormat = new SimpleDateFormat("yyyyMMdd'T'HHmmss'Z'");
@@ -119,6 +126,7 @@ public class CalendarFrame {
         Date convertedDate = sourceFormat.parse(dateStr);
         return convertedDate;
     }
+    
     public static String removeText(String cnv) {
     	StringBuffer cnvf = new StringBuffer(cnv);
     	cnvf.delete(0,cnvf.indexOf(":")+1);
@@ -126,9 +134,10 @@ public class CalendarFrame {
 		return cnvf.toString();
     }
     
-    public HighlightEvaluator createEvaluator(){
+    public HighlightEvaluator createEvaluator(CalendarItem newI){
     	HighlightEvaluator evaluator = new HighlightEvaluator();
     	ArrayList<CalendarItem> callist = new ArrayList<CalendarItem>(importCalendar());
+    	if (newI != null) callist.add(newI);
     	for (CalendarItem event : callist) {
     		Date sus = event.getDtstart();
     		int y = sus.getYear()+1900;

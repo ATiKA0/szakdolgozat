@@ -56,5 +56,6 @@
 	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/Szakdolgozat/szakdolgozat/lib/jgoodies-looks-2.4.1.jar"/>
 	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/Szakdolgozat/szakdolgozat/lib/junit-4.6.jar"/>
 	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/Szakdolgozat/szakdolgozat/lib/slf4j-nop-2.0.0-alpha6.jar"/>
+	<classpathentry kind="lib" path="miglayout15-swing.jar" sourcepath="miglayout-src.zip"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
