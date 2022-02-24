@@ -100,29 +100,29 @@ public class Frame_main {
 				alert.accept();
 				Thread.sleep(5000);
 				if(!driver.findElements(By.id("upBoxes_upCalendar_gdgCalendar_gdgCalendar_calendaroutlookexport")).isEmpty()){
-					JOptionPane.showMessageDialog(null, "Sikeres bejelentkez�s!");
+					JOptionPane.showMessageDialog(null, "Sikeres bejelentkezés!");
 					return driver;
 				}
 				else {
-					JOptionPane.showMessageDialog(null, "Sikertelen bejelentkez�s! K�rem pr�b�lja �jra!");
+					JOptionPane.showMessageDialog(null, "Sikertelen bejelentkezés! Kérem próbálja újra!");
 					driver.close();				
 					System.exit(0);
 				}
 			}
 			catch(Exception e){
 				if(!driver.findElements(By.id("upBoxes_upCalendar_gdgCalendar_gdgCalendar_calendaroutlookexport")).isEmpty()){
-					JOptionPane.showMessageDialog(null, "Sikeres bejelentkez�s!");
+					JOptionPane.showMessageDialog(null, "Sikeres bejelentkezés!");
 					return driver;
 				}
 				else {
-					JOptionPane.showMessageDialog(null, "Sikertelen bejelentkez�s! K�rem pr�b�lja �jra!");
+					JOptionPane.showMessageDialog(null, "Sikertelen bejelentkezés! Kérem próbálja újra!");
 					driver.close();				
 					System.exit(0);
 			}
 		}
 		}
 		else{
-			JOptionPane.showMessageDialog(null, "Az oldal nem el�rhet�! K�rem pr�b�lja �jra k�s�bb!");
+			JOptionPane.showMessageDialog(null, "Az oldal nem elérhető! Kérem próbálja újra később!");
 			driver.close();
 			System.exit(0);
 		}
@@ -163,11 +163,12 @@ public class Frame_main {
 	}
 	
 	private void initialize() {
+		System.setProperty("file.encoding","UTF-8");
 		frame = new JFrame();
 		frame.setBounds(100, 100, 490, 334);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
-		JButton b_login = new JButton("Bejelentkez\u00E9s");
+		JButton b_login = new JButton("Bejelentkezés");
 		b_login.setBounds(159, 231, 135, 32);
 		b_login.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
