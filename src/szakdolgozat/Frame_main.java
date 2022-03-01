@@ -77,7 +77,7 @@ public class Frame_main {
 		options.setExperimentalOption("prefs", chromePrefs);
 		options.setCapability(CapabilityType.ACCEPT_SSL_CERTS, true);
 		options.addArguments("disable-infobars");
-		//options.addArguments("--headless");
+		options.addArguments("--headless");
 		options.setAcceptInsecureCerts(true);
 		options.setUnhandledPromptBehaviour(UnexpectedAlertBehaviour.ACCEPT);
 		WebDriver driver = new ChromeDriver(options);
@@ -105,8 +105,9 @@ public class Frame_main {
 				}
 				else {
 					JOptionPane.showMessageDialog(null, "Sikertelen bejelentkezés! Kérem próbálja újra!");
-					driver.close();				
-					System.exit(0);
+					driver.close();
+					t_usrn.setText("");
+					t_passwd.setText("");
 				}
 			}
 			catch(Exception e){
@@ -116,21 +117,21 @@ public class Frame_main {
 				}
 				else {
 					JOptionPane.showMessageDialog(null, "Sikertelen bejelentkezés! Kérem próbálja újra!");
-					driver.close();				
-					System.exit(0);
+					driver.close();
+					t_usrn.setText("");
+					t_passwd.setText("");
 			}
 		}
 		}
 		else{
 			JOptionPane.showMessageDialog(null, "Az oldal nem elérhető! Kérem próbálja újra később!");
 			driver.close();
-			System.exit(0);
+			t_usrn.setText("");
+			t_passwd.setText("");
 		}
 		return driver;
 		
-	}
-	
-	
+	}	
 	
 	public static File getNewestFile() {
 	    File theNewestFile = null;
@@ -155,7 +156,7 @@ public class Frame_main {
 		String cale = driver.findElement(By.id("calexport_lblLinkGmail")).getText();
 		driver.get(cale);
 		try {
-			TimeUnit.SECONDS.sleep(7);
+			TimeUnit.SECONDS.sleep(4);
 			driver.close();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
@@ -175,9 +176,8 @@ public class Frame_main {
 				username = t_usrn.getText();
 				password = t_passwd.getText();
 				export(username, password);
-				JOptionPane.showMessageDialog(null, getNewestFile());
 				frame.setVisible(false);
-				Calendar_frame cf = new Calendar_frame();
+				CalendarFrame cf = new CalendarFrame();
 				cf.main(null);
 			}
 		});
@@ -207,9 +207,8 @@ public class Frame_main {
 					username = t_usrn.getText();
 					password = t_passwd.getText();
 					export(username, password);
-					JOptionPane.showMessageDialog(null, getNewestFile());
 					frame.setVisible(false);
-					Calendar_frame cf = new Calendar_frame();
+					CalendarFrame cf = new CalendarFrame();
 					cf.main(null);
 				 }
 				 }

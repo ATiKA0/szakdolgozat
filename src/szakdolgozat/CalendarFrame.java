@@ -16,6 +16,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 import java.util.TimeZone;
 
@@ -41,7 +42,6 @@ import java.awt.event.MouseEvent;
 public class CalendarFrame {
 	
 	CalendarItem returned = new CalendarItem(null ,null, null, null, null);
-	boolean trigger = false;
 	
 	public class MyMouse{
 		
@@ -148,9 +148,8 @@ public class CalendarFrame {
 								returned.setSummary(summary);
 								returned.setDtstart(dtstart);
 								returned.setUid(getRandomUid());
-								System.out.println("Returned2  "+returned.getUid());
 								frame.setVisible(false);
-								trigger = true;
+								display();
 								}
 						}
 					});
@@ -248,8 +247,6 @@ public class CalendarFrame {
      */
      void display() {
     	System.setProperty("file.encoding","UTF-8");
-    	//AddItem newItem = new AddItem();
-    	//System.out.println(newItem.getItem().getSummary());
         JFrame f = new JFrame("Naptár");
         f.setResizable(true);
         f.setMinimumSize(new Dimension(500, 400));
@@ -265,8 +262,9 @@ public class CalendarFrame {
         JButton btnNewItem = new JButton("Új esemény");
         btnNewItem.addMouseListener(new MouseAdapter() {
         	public void mousePressed(MouseEvent e) {
-        	MyMouse myMouse = new MyMouse();
-        	myMouse.initialize();
+        		f.setVisible(false);
+        		MyMouse myMouse = new MyMouse();
+        		myMouse.initialize();
         	}
         });
         f.getContentPane().add(btnNewItem, BorderLayout.SOUTH);
@@ -312,6 +310,7 @@ public class CalendarFrame {
     	try {
     	      CalendarBuilder builder = new CalendarBuilder();
     	      final UnfoldingReader ufrdr =new UnfoldingReader(new FileReader(ics),true);
+    	      if(returned.getDtend() != null)sus.add(returned);
     	      net.fortuna.ical4j.model.Calendar calendar = builder.build(ufrdr);
     	      List<CalendarComponent> events = calendar.getComponents(Component.VEVENT);
     	      Iterator<CalendarComponent> iter = events.iterator(); 
