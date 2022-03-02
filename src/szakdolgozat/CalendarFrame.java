@@ -5,7 +5,14 @@ import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Image;
 import java.awt.Insets;
+import java.awt.MenuItem;
+import java.awt.PopupMenu;
+import java.awt.SystemTray;
+import java.awt.Toolkit;
+import java.awt.TrayIcon;
+import java.awt.TrayIcon.MessageType;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.FileReader;
@@ -19,11 +26,16 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 import java.util.TimeZone;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 
 import com.toedter.calendar.IDateEvaluator;
 import com.toedter.calendar.JCalendar;
@@ -35,15 +47,20 @@ import net.fortuna.ical4j.model.Component;
 import net.fortuna.ical4j.model.Property;
 import net.fortuna.ical4j.model.component.CalendarComponent;
 import javax.swing.JButton;
+
+import java.awt.AWTException;
 import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 public class CalendarFrame {
 	
 	CalendarItem returned = new CalendarItem(null ,null, null, null, null);
-	
-	public class MyMouse{
+	ArrayList<CalendarItem> sus = new ArrayList<CalendarItem>();
 		
 		public void initialize() {
 			System.setProperty("file.encoding","UTF-8");
@@ -103,7 +120,7 @@ public class CalendarFrame {
 			frame.getContentPane().add(lblDtstart, gbc_lblDtstart);
 			
 			JDateChooser dateDtstart = new JDateChooser();
-			dateDtstart.setDateFormatString("yyyy.MM.dd. hh:mm");
+			dateDtstart.setDateFormatString("yyyy.MM.dd. HH:mm");
 			GridBagConstraints gbc_dateDtstart = new GridBagConstraints();
 			gbc_dateDtstart.fill = GridBagConstraints.BOTH;
 			gbc_dateDtstart.insets = new Insets(0, 0, 5, 5);
@@ -120,7 +137,7 @@ public class CalendarFrame {
 			frame.getContentPane().add(lblDtend, gbc_lblDtend);
 			
 			JDateChooser dateDtend = new JDateChooser();
-			dateDtend.setDateFormatString("yyyy.MM.dd. hh:mm");
+			dateDtend.setDateFormatString("yyyy.MM.dd. HH:mm");
 			GridBagConstraints gbc_dateDtend = new GridBagConstraints();
 			gbc_dateDtend.fill = GridBagConstraints.BOTH;
 			gbc_dateDtend.insets = new Insets(0, 0, 5, 5);
@@ -162,9 +179,9 @@ public class CalendarFrame {
 			gbc_btnSend.gridx = 1;
 			gbc_btnSend.gridy = 9;
 			frame.getContentPane().add(btnSend, gbc_btnSend);
-    }
+		}
 		
-		protected String getRandomUid() {
+		private String getRandomUid() {
 	        String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890";
 	        StringBuilder rand = new StringBuilder();
 	        Random rnd = new Random();
@@ -177,17 +194,8 @@ public class CalendarFrame {
 	        return Str;
 
 	    }
-		
-	    public CalendarItem getItem(){
-	    	return returned;
-	    };
-	    
-	    public void setItem(CalendarItem item) {
-	    	item = returned;
-	    }
-	}
 	
-	ArrayList<CalendarItem> sus = new ArrayList<CalendarItem>();
+
 
     private static class HighlightEvaluator implements IDateEvaluator {
 
@@ -247,13 +255,21 @@ public class CalendarFrame {
      */
      void display() {
     	System.setProperty("file.encoding","UTF-8");
+    	Tray mini = new Tray();
         JFrame f = new JFrame("Naptár");
+        f.addWindowListener(new WindowAdapter() {
+        	@Override
+        	public void windowIconified(WindowEvent e) {
+        		f.setVisible(false);
+        	}
+        });
         f.setResizable(true);
         f.setMinimumSize(new Dimension(500, 400));
         f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         HighlightEvaluator evaluator = createEvaluator();
         
         JCalendar jc = new JCalendar();
+        jc.getDayChooser().setDayBordersVisible(true);
         jc.getDayChooser().addDateEvaluator(evaluator);
         f.getContentPane().setLayout(new BorderLayout(0, 0));
         jc.setCalendar(jc.getCalendar());
@@ -262,15 +278,17 @@ public class CalendarFrame {
         JButton btnNewItem = new JButton("Új esemény");
         btnNewItem.addMouseListener(new MouseAdapter() {
         	public void mousePressed(MouseEvent e) {
-        		f.setVisible(false);
-        		MyMouse myMouse = new MyMouse();
-        		myMouse.initialize();
+        		f.dispose();
+        		mini.removeTrayIcon();
+        		initialize();
         	}
         });
         f.getContentPane().add(btnNewItem, BorderLayout.SOUTH);
         f.pack();
         f.setLocationRelativeTo(null);
         f.setVisible(true);
+		mini.trayIcon(f);
+		mini.notificationCalendar();
     }    
     
     private static Date convertToNewFormat(String dateStr) throws ParseException {
@@ -343,8 +361,74 @@ public class CalendarFrame {
         c.set(Calendar.MILLISECOND, 0);
         return (c.getTime());
     }
+    
+    class Tray{
+    	static TrayIcon pubI;
+    	static SystemTray pubT;
+    	 public void trayIcon(JFrame f) {
+    		 	if (!SystemTray.isSupported()) {
+    		 		System.out.println("SystemTray is not supported");
+    	            return;
+    	        }
+    		 	final PopupMenu popup = new PopupMenu();
+    		 	final SystemTray tray = SystemTray.getSystemTray();
+    		 	Image icon = Toolkit.getDefaultToolkit().createImage(".//src//szakdolgozat//calendar.png");
+    		 	TrayIcon trayIcon = new TrayIcon(icon, "Órarend");
+    		 	pubI = trayIcon;
+    		 	pubT=tray;
+    		 	trayIcon.setImageAutoSize(true);
+         		trayIcon.setToolTip("Órarend");
+         		
+         		MenuItem open = new MenuItem("Megnyitás");
+         		open.addActionListener(new ActionListener() {
+         	        public void actionPerformed(ActionEvent e) {
+         	            f.setVisible(true);
+         	            f.setState(f.NORMAL);
+         	        }
+         	    });
+         		MenuItem close = new MenuItem("Bezárás");
+         		close.addActionListener(new ActionListener() {
+         	        public void actionPerformed(ActionEvent e) {
+         	            System.exit(0);
+         	        }
+         	    });
+         		popup.add(open);
+         		popup.add(close);
+         		trayIcon.setPopupMenu(popup);
+         		
+         		try {
+                    tray.add(trayIcon);
+                } catch (AWTException e) {
+                    System.out.println("TrayIcon could not be added.");
+                }
+
+    	 }
+
+    	public void notificationCalendar() {
+	    	Iterator<CalendarItem> iter = sus.iterator();
+	    	Date date = new Date(System.currentTimeMillis());
+			Timer time = new Timer();
+			while (iter.hasNext()) {
+				CalendarItem ize = iter.next();
+				Date dtstart = ize.getDtstart();
+				TimerTask task = new TimerTask(){
+					@Override
+					public void run() {
+					pubI.displayMessage("Hello, World", ize.getSummary()+System.lineSeparator()+ize.getLocation()+System.lineSeparator()+dtstart+System.lineSeparator()+ize.getDtend(), MessageType.INFO);
+					}
+				};
+				if(dtstart.compareTo(date) > 0)time.schedule(task, dtstart);
+			}
+    	}
+    	public void removeTrayIcon() {
+    		pubT.remove(pubI);
+    	}
+    }
 
     public static void main(String[] args) {
         EventQueue.invokeLater(new CalendarFrame()::display);
     }
+    
 }
+    
+    

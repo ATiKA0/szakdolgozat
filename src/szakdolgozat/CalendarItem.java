@@ -2,7 +2,7 @@ package szakdolgozat;
 
 import java.util.Date;
 
-public class CalendarItem {
+public class CalendarItem{
 	String Uid;
 	Date Dtstart;
 	Date Dtend;
