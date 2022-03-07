@@ -1,15 +1,15 @@
 package szakdolgozat;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 public class CalendarItem{
 	String Uid;
-	Date Dtstart;
-	Date Dtend;
+	LocalDateTime Dtstart;
+	LocalDateTime Dtend;
 	String Location;
 	String Summary;
 	
-	public CalendarItem(String uid, Date dtstart, Date dtend, String location, String summary) {
+	public CalendarItem(String uid, LocalDateTime dtstart, LocalDateTime dtend, String location, String summary) {
 		Uid = uid;
 		Dtstart = dtstart;
 		Dtend = dtend;
@@ -22,16 +22,16 @@ public class CalendarItem{
 	public void setUid(String uid) {
 		Uid = uid;
 	}
-	public Date getDtstart() {
+	public LocalDateTime getDtstart() {
 		return Dtstart;
 	}
-	public void setDtstart(Date dtstart) {
+	public void setDtstart(LocalDateTime dtstart) {
 		Dtstart = dtstart;
 	}
-	public Date getDtend() {
+	public LocalDateTime getDtend() {
 		return Dtend;
 	}
-	public void setDtend(Date dtend) {
+	public void setDtend(LocalDateTime dtend) {
 		Dtend = dtend;
 	}
 	public String getLocation() {

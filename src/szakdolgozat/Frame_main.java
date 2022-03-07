@@ -31,14 +31,16 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import javax.swing.JComboBox;
 
 public class Frame_main {
 
 	private JFrame frame;
 	private JTextField t_usrn;
-	public String username;
-	public String password;
+	private String username;
+	private String password;
 	private JPasswordField t_passwd;
+	protected String combo;
 
 	/**
 	 * Launch the application.
@@ -77,13 +79,12 @@ public class Frame_main {
 		options.setExperimentalOption("prefs", chromePrefs);
 		options.setCapability(CapabilityType.ACCEPT_SSL_CERTS, true);
 		options.addArguments("disable-infobars");
-		options.addArguments("--headless");
+		//options.addArguments("--headless");
 		options.setAcceptInsecureCerts(true);
 		options.setUnhandledPromptBehaviour(UnexpectedAlertBehaviour.ACCEPT);
 		WebDriver driver = new ChromeDriver(options);
 		WebDriverWait wait = new WebDriverWait(driver, 5);
-		String url = null;
-		driver.get("https://neptun-web3.tr.pte.hu/hallgato/login.aspx");
+		driver.get("https://neptun-web"+combo+".tr.pte.hu/hallgato/login.aspx");
 		WebElement login = driver.findElement(By.name("btnSubmit"));
 		if(login.isDisplayed()) {
 			//http://atika00707.dynu.net:8080/
@@ -170,7 +171,7 @@ public class Frame_main {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		JButton b_login = new JButton("Bejelentkezés");
-		b_login.setBounds(159, 231, 135, 32);
+		b_login.setBounds(159, 199, 135, 32);
 		b_login.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				username = t_usrn.getText();
@@ -214,7 +215,18 @@ public class Frame_main {
 				 }
 		});
 		t_passwd.setEchoChar('*');
-		t_passwd.setBounds(109, 174, 238, 26);
+		t_passwd.setBounds(109, 153, 238, 26);
 		frame.getContentPane().add(t_passwd);
+		
+		String[] choices = {"1", "2", "3", "4"};
+		final JComboBox comboServer = new JComboBox(choices);
+		comboServer.setBounds(126, 268, 38, 21);
+		combo = comboServer.getSelectedItem().toString();
+		frame.getContentPane().add(comboServer);
+		
+		JLabel lblServer = new JLabel("Neptun szerver:");
+		lblServer.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		lblServer.setBounds(10, 270, 118, 13);
+		frame.getContentPane().add(lblServer);
 	}
 }

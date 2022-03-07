@@ -1,5 +1,7 @@
 package szakdolgozat;
 
+import java.awt.AWTException;
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.EventQueue;
@@ -13,29 +15,37 @@ import java.awt.SystemTray;
 import java.awt.Toolkit;
 import java.awt.TrayIcon;
 import java.awt.TrayIcon.MessageType;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.FileReader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Objects;
+import java.util.Locale;
 import java.util.Random;
 import java.util.TimeZone;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
 
 import com.toedter.calendar.IDateEvaluator;
 import com.toedter.calendar.JCalendar;
@@ -46,21 +56,13 @@ import net.fortuna.ical4j.data.UnfoldingReader;
 import net.fortuna.ical4j.model.Component;
 import net.fortuna.ical4j.model.Property;
 import net.fortuna.ical4j.model.component.CalendarComponent;
-import javax.swing.JButton;
-
-import java.awt.AWTException;
-import java.awt.BorderLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 
 public class CalendarFrame {
 	
 	CalendarItem returned = new CalendarItem(null ,null, null, null, null);
-	ArrayList<CalendarItem> sus = new ArrayList<CalendarItem>();
+	static ArrayList<CalendarItem> sus = new ArrayList<CalendarItem>();
+	static private LocalDateTime choosenDate;
+	HighlightEvaluator evaluator = new HighlightEvaluator();
 		
 		public void initialize() {
 			System.setProperty("file.encoding","UTF-8");
@@ -152,8 +154,8 @@ public class CalendarFrame {
 						public void mousePressed(MouseEvent e) {
 							String summary = textSummary.getText();
 							String location = textLocation.getText();
-							Date dtstart = dateDtstart.getDate();
-							Date dtend = dateDtend.getDate();
+							LocalDateTime dtstart = convertToLocalDateTime(dateDtstart.getDate());
+							LocalDateTime dtend = convertToLocalDateTime(dateDtend.getDate());
 							
 							if(summary == null || location == null || dtstart == null || dtend == null) {
 								JOptionPane.showMessageDialog(null, "Kitöltetlen mező!");
@@ -166,6 +168,8 @@ public class CalendarFrame {
 								returned.setDtstart(dtstart);
 								returned.setUid(getRandomUid());
 								frame.setVisible(false);
+								sus.add(returned);
+								evaluator.add(convertToDate(returned.getDtstart()));
 								display();
 								}
 						}
@@ -207,7 +211,6 @@ public class CalendarFrame {
         public List<Date> getList() {
         	return list;
         }
-
         @Override
         public boolean isSpecial(Date date) {
             return list.contains(date);
@@ -247,13 +250,21 @@ public class CalendarFrame {
         public String getInvalidTooltip() {
             return null;
         }
+
     }
 
     /**
      * @return 
      * @wbp.parser.entryPoint
      */
+    void firstRun() {
+    	importCalendar();
+    	createEvaluator();
+    	display();
+    }
      void display() {
+    	System.out.println(sus.size());
+    	Locale.setDefault(new Locale("hu", "HU"));
     	System.setProperty("file.encoding","UTF-8");
     	Tray mini = new Tray();
         JFrame f = new JFrame("Naptár");
@@ -266,11 +277,21 @@ public class CalendarFrame {
         f.setResizable(true);
         f.setMinimumSize(new Dimension(500, 400));
         f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        HighlightEvaluator evaluator = createEvaluator();
+        
         
         JCalendar jc = new JCalendar();
         jc.getDayChooser().setDayBordersVisible(true);
         jc.getDayChooser().addDateEvaluator(evaluator);
+        jc.getDayChooser().addPropertyChangeListener("day", new PropertyChangeListener() {
+        	@Override
+            public void propertyChange(PropertyChangeEvent e) {
+                choosenDate = convertToLocalDateTime(jc.getDate());
+                CalendarDayView dayView = new CalendarDayView();
+                dayView.listView();
+                f.dispose();
+                display();
+                }
+        });
         f.getContentPane().setLayout(new BorderLayout(0, 0));
         jc.setCalendar(jc.getCalendar());
         f.getContentPane().add(jc);
@@ -291,12 +312,38 @@ public class CalendarFrame {
 		mini.notificationCalendar();
     }    
     
-    private static Date convertToNewFormat(String dateStr) throws ParseException {
-        TimeZone utc = TimeZone.getTimeZone("UTC");
+    private static LocalDateTime convertToNewFormat(String dateStr) throws ParseException {
+    	TimeZone utc = TimeZone.getTimeZone("UTC");
         SimpleDateFormat sourceFormat = new SimpleDateFormat("yyyyMMdd'T'HHmmss'Z'");
         sourceFormat.setTimeZone(utc);
-        Date convertedDate = sourceFormat.parse(dateStr);
-        return convertedDate;
+        Date parsedDate = sourceFormat.parse(dateStr);
+        LocalDateTime returnedDate= convertToLocalDateTime(parsedDate);
+        return returnedDate;
+    }
+    
+    public static LocalDateTime convertToLocalDateTime(Date dateToConvert) {
+        return Instant.ofEpochMilli(dateToConvert.getTime())
+          .atZone(ZoneId.systemDefault())
+          .toLocalDateTime();
+    }
+    
+    public static Date convertToDate(LocalDateTime dateToConvert) {
+        return java.util.Date
+          .from(dateToConvert.atZone(ZoneId.systemDefault())
+          .toInstant());
+    }
+    
+    public static String printFormatDate(LocalDateTime input, boolean withTime) {
+    	DateTimeFormatter formatterD = DateTimeFormatter.ofPattern("EEEE, yyyy.MMMdd");
+    	DateTimeFormatter formatterT = DateTimeFormatter.ofPattern("EEEE, yyyy.MMMdd HH:mm");
+    	String output = null;
+    	if(withTime) {
+    		output = input.format(formatterT);
+    	}
+    	else {
+    		output = input.format(formatterD);
+    	}
+    	return output;
     }
     
     public static String removeText(String cnv) {
@@ -306,29 +353,27 @@ public class CalendarFrame {
 		return cnvf.toString();
     }
     
-    public HighlightEvaluator createEvaluator(){
-    	HighlightEvaluator evaluator = new HighlightEvaluator();
-    	ArrayList<CalendarItem> callist = new ArrayList<CalendarItem>(importCalendar());
+    public void createEvaluator(){
+    	ArrayList<CalendarItem> callist = new ArrayList<CalendarItem>(sus);
     	Iterator<CalendarItem> lol = callist.iterator();
     	while (lol.hasNext()) {
     		CalendarItem event = lol.next();
-    		Date sus = event.getDtstart();
-    		int y = sus.getYear()+1900;
-    		int m = sus.getMonth();
-    		int d = sus.getDate();
+    		LocalDateTime sus = event.getDtstart();
+    		int y = sus.getYear();
+    		int m = sus.getMonthValue()-1;
+    		int d = sus.getDayOfMonth();
     		evaluator.add(createDate(y, m, d));
     	}
-		return evaluator;
     }
     
-    public ArrayList<CalendarItem> importCalendar(){
+    public void importCalendar(){
     	final String ics = Frame_main.getNewestFile().toString();
     	System.setProperty("ical4j.unfolding.relaxed", "true");
     	System.setProperty("ical4j.parsing.relaxed", "true");
     	try {
     	      CalendarBuilder builder = new CalendarBuilder();
     	      final UnfoldingReader ufrdr =new UnfoldingReader(new FileReader(ics),true);
-    	      if(returned.getDtend() != null)sus.add(returned);
+    	      System.out.println(returned.getDtend());
     	      net.fortuna.ical4j.model.Calendar calendar = builder.build(ufrdr);
     	      List<CalendarComponent> events = calendar.getComponents(Component.VEVENT);
     	      Iterator<CalendarComponent> iter = events.iterator(); 
@@ -342,11 +387,9 @@ public class CalendarFrame {
     	    	
     	  		sus.add(new CalendarItem(removeText(uid), convertToNewFormat(dtstartf), convertToNewFormat(dtendf), removeText(location), removeText(summary)));
     	      }
-    	      return sus;
     	} 
     	catch (Throwable t) {
     	      t.printStackTrace();
-    	      return null;
     	}
     }
 
@@ -360,6 +403,10 @@ public class CalendarFrame {
         c.set(Calendar.SECOND, 0);
         c.set(Calendar.MILLISECOND, 0);
         return (c.getTime());
+    }
+    
+    public LocalDateTime getChoosenDate() {
+    	return choosenDate;
     }
     
     class Tray{
@@ -378,6 +425,13 @@ public class CalendarFrame {
     		 	pubT=tray;
     		 	trayIcon.setImageAutoSize(true);
          		trayIcon.setToolTip("Órarend");
+         		
+         		trayIcon.addActionListener(new ActionListener() {
+         			public void actionPerformed(ActionEvent evt) {
+         				f.setVisible(true);
+         	            f.setState(f.NORMAL);
+         			};
+         		});
          		
          		MenuItem open = new MenuItem("Megnyitás");
          		open.addActionListener(new ActionListener() {
@@ -406,18 +460,18 @@ public class CalendarFrame {
 
     	public void notificationCalendar() {
 	    	Iterator<CalendarItem> iter = sus.iterator();
-	    	Date date = new Date(System.currentTimeMillis());
+	    	LocalDateTime date = LocalDateTime.now();
 			Timer time = new Timer();
 			while (iter.hasNext()) {
 				CalendarItem ize = iter.next();
-				Date dtstart = ize.getDtstart();
+				LocalDateTime dtstart = ize.getDtstart();
 				TimerTask task = new TimerTask(){
 					@Override
 					public void run() {
-					pubI.displayMessage("Hello, World", ize.getSummary()+System.lineSeparator()+ize.getLocation()+System.lineSeparator()+dtstart+System.lineSeparator()+ize.getDtend(), MessageType.INFO);
+					pubI.displayMessage("Esemény kezdete", ize.getSummary()+System.lineSeparator()+ize.getLocation()+System.lineSeparator()+dtstart+System.lineSeparator()+ize.getDtend(), MessageType.INFO);
 					}
 				};
-				if(dtstart.compareTo(date) > 0)time.schedule(task, dtstart);
+				if(dtstart.compareTo(date) > 0)time.schedule(task, convertToDate(dtstart));
 			}
     	}
     	public void removeTrayIcon() {
@@ -426,7 +480,7 @@ public class CalendarFrame {
     }
 
     public static void main(String[] args) {
-        EventQueue.invokeLater(new CalendarFrame()::display);
+        EventQueue.invokeLater(new CalendarFrame()::firstRun);
     }
     
 }
