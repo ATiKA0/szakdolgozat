@@ -22,7 +22,7 @@ public class CalendarDayView extends CalendarFrame {
 		frmLol.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
-				//display();
+				display();
 			}
 		});
 		frmLol.setTitle(printFormatDate(getChoosenDate(),false));
