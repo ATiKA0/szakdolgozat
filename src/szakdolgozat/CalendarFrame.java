@@ -55,6 +55,7 @@ public class CalendarFrame {
 	static ArrayList<CalendarItem> sus = new ArrayList<CalendarItem>();
 	static private LocalDateTime choosenDate;
 	static HighlightEvaluator evaluator = new HighlightEvaluator();
+	public Tray mini = new Tray();
 
     static class HighlightEvaluator implements IDateEvaluator {
 
@@ -120,7 +121,6 @@ public class CalendarFrame {
      void display() {
     	Locale.setDefault(new Locale("hu", "HU"));
     	System.setProperty("file.encoding","UTF-8");
-    	Tray mini = new Tray();
         JFrame f = new JFrame("Naptár");
         f.addWindowListener(new WindowAdapter() {
         	@Override
@@ -132,7 +132,6 @@ public class CalendarFrame {
         f.setMinimumSize(new Dimension(500, 400));
         f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
-        
         JCalendar jc = new JCalendar();
         jc.getDayChooser().setDayBordersVisible(true);
         jc.getDayChooser().addDateEvaluator(evaluator);
@@ -140,9 +139,10 @@ public class CalendarFrame {
         	@Override
             public void propertyChange(PropertyChangeEvent e) {
                 choosenDate = convertToLocalDateTime(jc.getDate());
-                CalendarDayView dayView = new CalendarDayView();
-                dayView.listView();
+                WeekOrDay weekorday = new WeekOrDay();
+                weekorday.WeekOrDayinit();
                 f.dispose();
+                mini.removeTrayIcon();
                 }
         });
         f.getContentPane().setLayout(new BorderLayout(0, 0));
@@ -321,7 +321,7 @@ public class CalendarFrame {
 				TimerTask task = new TimerTask(){
 					@Override
 					public void run() {
-					pubI.displayMessage("Esemény kezdete", ize.getSummary()+System.lineSeparator()+ize.getLocation()+System.lineSeparator()+dtstart+System.lineSeparator()+ize.getDtend(), MessageType.INFO);
+					pubI.displayMessage("Esemény kezdete", "Leírás: "+ize.getSummary()+System.lineSeparator()+"Helyszín: "+ize.getLocation()+System.lineSeparator()+"Kezdés ideje: "+printFormatDate(dtstart, true)+System.lineSeparator()+"Vége: "+printFormatDate(ize.getDtend(),true), MessageType.INFO);
 					}
 				};
 				if(dtstart.compareTo(date) > 0)time.schedule(task, convertToDate(dtstart));

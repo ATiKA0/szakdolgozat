@@ -5,6 +5,8 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Random;
@@ -19,14 +21,24 @@ import com.toedter.calendar.JDateChooser;
 
 public class AddItem extends CalendarFrame {
 
+	/**
+	 * @wbp.parser.entryPoint
+	 */
 	public void initialize() {
 		System.setProperty("file.encoding","UTF-8");
 		JFrame frame  = new JFrame();
+		frame.addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent e) {
+				mini.removeTrayIcon();
+				display();
+			}
+		});
 		frame.setVisible(true);
 		frame.setResizable(false);
 		frame.setTitle("Új bejegyzés");
 		frame.setBounds(100, 100, 360, 450);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[]{65, 212, 65, 0};
 		gridBagLayout.rowHeights = new int[]{55, 36, 50, 36, 50, 36, 50, 36, 10, 37, 17, 0};
@@ -77,6 +89,7 @@ public class AddItem extends CalendarFrame {
 		frame.getContentPane().add(lblDtstart, gbc_lblDtstart);
 		
 		JDateChooser dateDtstart = new JDateChooser();
+		dateDtstart.setDate(new Date());
 		dateDtstart.setDateFormatString("yyyy.MM.dd. HH:mm");
 		GridBagConstraints gbc_dateDtstart = new GridBagConstraints();
 		gbc_dateDtstart.fill = GridBagConstraints.BOTH;
@@ -94,6 +107,7 @@ public class AddItem extends CalendarFrame {
 		frame.getContentPane().add(lblDtend, gbc_lblDtend);
 		
 		JDateChooser dateDtend = new JDateChooser();
+		dateDtend.setDate(new Date());
 		dateDtend.setDateFormatString("yyyy.MM.dd. HH:mm");
 		GridBagConstraints gbc_dateDtend = new GridBagConstraints();
 		gbc_dateDtend.fill = GridBagConstraints.BOTH;
@@ -103,29 +117,37 @@ public class AddItem extends CalendarFrame {
 		frame.getContentPane().add(dateDtend, gbc_dateDtend);
 		
 		JButton btnSend = new JButton("Hozzáadás");
-		btnSend.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				btnSend.addMouseListener(new MouseAdapter() {
-					public void mousePressed(MouseEvent e) {
-						String summary = textSummary.getText();
-						String location = textLocation.getText();
-						LocalDateTime dtstart = convertToLocalDateTime(dateDtstart.getDate());
-						LocalDateTime dtend = convertToLocalDateTime(dateDtend.getDate());
-						
-						if(summary == null || location == null || dtstart == null || dtend == null) {
-							JOptionPane.showMessageDialog(null, "Kitöltetlen mező!");
-							textSummary.setText(null); textLocation.setText(null); dateDtstart.setDate(null); dateDtend.setDate(null);
-						}
-						else {
-							CalendarItem returned = new CalendarItem(getRandomUid(), dtstart, dtend, location, summary);
-							frame.setVisible(false);
-							sus.add(returned);
-							Date createdDate = createDate(returned.getDtstart().getYear(),returned.getDtstart().getMonthValue()-1,returned.getDtstart().getDayOfMonth());
-							evaluator.add(createdDate);
-							display();
-							}
-					}
-				});
+		btnSend.addMouseListener(new MouseAdapter() {
+			public void mousePressed(MouseEvent e) {
+				String summary = textSummary.getText();
+				String location = textLocation.getText();
+				LocalDateTime dtstart = null; 
+				LocalDateTime dtend = null;
+				try {
+				dtstart = convertToLocalDateTime(dateDtstart.getDate());
+				dtend = convertToLocalDateTime(dateDtend.getDate());
+				}
+				catch(Exception f){
+					JOptionPane.showMessageDialog(null, "Hibás dátum!");
+					textSummary.setText(null); textLocation.setText(null); dateDtstart.setDate(new Date()); dateDtend.setDate(new Date());
+				}
+				if(summary.isEmpty()||location.isEmpty()||dateDtstart.equals(null)||dtend.equals(null)) {
+					JOptionPane.showMessageDialog(null, "Kitöltetlen mező!");
+					textSummary.setText(null); textLocation.setText(null); dateDtstart.setDate(new Date()); dateDtend.setDate(new Date());
+				}
+				else if(dtstart.isAfter(dtend)) {
+					JOptionPane.showMessageDialog(null, "Hibás dátum!");
+					textSummary.setText(null); textLocation.setText(null); dateDtstart.setDate(new Date()); dateDtend.setDate(new Date());
+				}
+				else {
+					CalendarItem returned = new CalendarItem(getRandomUid(), dtstart, dtend, location, summary);
+					frame.setVisible(false);
+					sus.add(returned);
+					Date createdDate = createDate(returned.getDtstart().getYear(),returned.getDtstart().getMonthValue()-1,returned.getDtstart().getDayOfMonth());
+					evaluator.add(createdDate);
+					mini.removeTrayIcon();
+					display();
+				}
 			}
 		});
 		
@@ -135,6 +157,8 @@ public class AddItem extends CalendarFrame {
 		gbc_btnSend.gridx = 1;
 		gbc_btnSend.gridy = 9;
 		frame.getContentPane().add(btnSend, gbc_btnSend);
+		mini.trayIcon(frame);
+		mini.notificationCalendar();
 	}
 	
 	private String getRandomUid() {

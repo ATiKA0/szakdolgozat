@@ -22,6 +22,7 @@ public class CalendarDayView extends CalendarFrame {
 		frmLol.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
+				mini.removeTrayIcon();
 				display();
 			}
 		});
@@ -38,6 +39,8 @@ public class CalendarDayView extends CalendarFrame {
 		frmLol.getContentPane().add(sp);
 		frmLol.toFront();
 		frmLol.requestFocus();
+		mini.trayIcon(frmLol);
+		mini.notificationCalendar();
 		frmLol.setVisible(true);
 	}
 	
