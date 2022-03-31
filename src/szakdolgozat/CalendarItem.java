@@ -2,49 +2,51 @@ package szakdolgozat;
 
 import java.time.LocalDateTime;
 
+//The items in calendar
 public class CalendarItem{
-	String Uid;
-	LocalDateTime Dtstart;
-	LocalDateTime Dtend;
-	String Location;
-	String Summary;
-	
-	public CalendarItem(String uid, LocalDateTime dtstart, LocalDateTime dtend, String location, String summary) {
-		Uid = uid;
-		Dtstart = dtstart;
-		Dtend = dtend;
-		Location = location;
-		Summary = summary;
+	String uid;
+	LocalDateTime dtStart;
+	LocalDateTime dtEnd;
+	String location;
+	String summary;
+//Constructor method
+	public CalendarItem(String uid, LocalDateTime dtStart, LocalDateTime dtEnd, String location, String summary) {
+		this.uid = uid;
+		this.dtStart = dtStart;
+		this.dtEnd = dtEnd;
+		this.location = location;
+		this.summary = summary;
 	}
-	public String getUid() {
-		return Uid;
+//Getters and setters
+	public String getuid() {
+		return this.uid;
 	}
-	public void setUid(String uid) {
-		Uid = uid;
+	public void setuid(String uid) {
+		this.uid = uid;
 	}
-	public LocalDateTime getDtstart() {
-		return Dtstart;
+	public LocalDateTime getdtStart() {
+		return this.dtStart;
 	}
-	public void setDtstart(LocalDateTime dtstart) {
-		Dtstart = dtstart;
+	public void setdtStart(LocalDateTime dtStart) {
+		this.dtStart = dtStart;
 	}
-	public LocalDateTime getDtend() {
-		return Dtend;
+	public LocalDateTime getdtEnd() {
+		return this.dtEnd;
 	}
-	public void setDtend(LocalDateTime dtend) {
-		Dtend = dtend;
+	public void setdtEnd(LocalDateTime dtEnd) {
+		this.dtEnd = dtEnd;
 	}
-	public String getLocation() {
-		return Location;
+	public String getlocation() {
+		return this.location;
 	}
-	public void setLocation(String location) {
-		Location = location;
+	public void setlocation(String location) {
+		this.location = location;
 	}
-	public String getSummary() {
-		return Summary;
+	public String getsummary() {
+		return this.summary;
 	}
-	public void setSummary(String summary) {
-		Summary = summary;
+	public void setsummary(String summary) {
+		this.summary = summary;
 	}
 	
 }

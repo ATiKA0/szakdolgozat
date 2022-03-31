@@ -51,15 +51,21 @@ import net.fortuna.ical4j.model.Property;
 import net.fortuna.ical4j.model.component.CalendarComponent;
 
 public class CalendarFrame {
-
-	static ArrayList<CalendarItem> sus = new ArrayList<CalendarItem>();
-	static private LocalDateTime choosenDate;
+/*
+ *	Public variables 
+ */
+	static ArrayList<CalendarItem> calendarItemList = new ArrayList<CalendarItem>();	//This is the list where the calendar items stored from the ics file
+	static private LocalDateTime chosenDate;	//This is the chosen date from the calendar view
 	static HighlightEvaluator evaluator = new HighlightEvaluator();
 	public Tray mini = new Tray();
-
+/*
+ *	This is the highlight evaluator. This is an imported class for the JCalendar.
+ *	This is used for highlight the dates when there is an event.
+ *	When there is an event on the day, the background changes to green. 
+ */
     static class HighlightEvaluator implements IDateEvaluator {
 
-        private final List<Date> list = new ArrayList<>();
+        private final List<Date> list = new ArrayList<>();	//This is the list where the highlighted dates are stored
 
         public void add(Date date) {
             list.add(date);
@@ -113,16 +119,23 @@ public class CalendarFrame {
      * @return 
      * @wbp.parser.entryPoint
      */
+    /*
+     * This is the method wich runs first and set everything up when this frame is opened
+     */
     void firstRun() {
     	importCalendar();
     	createEvaluator();
     	display();
     }
+    /*
+     * This is the "main" method.
+     * Creating the window view.
+     */
      void display() {
-    	Locale.setDefault(new Locale("hu", "HU"));
-    	System.setProperty("file.encoding","UTF-8");
+    	Locale.setDefault(new Locale("hu", "HU"));	//Set the default locale for the dates.
+    	System.setProperty("file.encoding","UTF-8");	//Set the file encoding to UTF-8
         JFrame f = new JFrame("Naptár");
-        f.addWindowListener(new WindowAdapter() {
+        f.addWindowListener(new WindowAdapter() {	//This window listener is for iconify to the system tray. 
         	@Override
         	public void windowIconified(WindowEvent e) {
         		f.setVisible(false);
@@ -132,40 +145,42 @@ public class CalendarFrame {
         f.setMinimumSize(new Dimension(500, 400));
         f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
-        JCalendar jc = new JCalendar();
+        JCalendar jc = new JCalendar();	//Creating the JCalendar element
         jc.getDayChooser().setDayBordersVisible(true);
-        jc.getDayChooser().addDateEvaluator(evaluator);
-        jc.getDayChooser().addPropertyChangeListener("day", new PropertyChangeListener() {
+        jc.getDayChooser().addDateEvaluator(evaluator);	//Add the evaluator for the coloring
+        jc.getDayChooser().addPropertyChangeListener("day", new PropertyChangeListener() {	//Listener for the date choosing with mouse click
         	@Override
             public void propertyChange(PropertyChangeEvent e) {
-                choosenDate = convertToLocalDateTime(jc.getDate());
+                chosenDate = convertToLocalDateTime(jc.getDate());	//This gets the clicked date in localdate format
                 WeekOrDay weekorday = new WeekOrDay();
-                weekorday.WeekOrDayinit();
-                f.dispose();
-                mini.removeTrayIcon();
+                weekorday.WeekOrDayinit();	//Start the asking window. It's ask what the user want, a week view or a day view
+                f.dispose();	//Destroy the month window
+                mini.removeTrayIcon();	//Remove the tray icon for this window
                 }
         });
         f.getContentPane().setLayout(new BorderLayout(0, 0));
         jc.setCalendar(jc.getCalendar());
         f.getContentPane().add(jc);
         
-        JButton btnNewItem = new JButton("Új esemény");
+        JButton btnNewItem = new JButton("Új esemény");	//There is a new event button labeled "Új esemény".
         btnNewItem.addMouseListener(new MouseAdapter() {
         	public void mousePressed(MouseEvent e) {
         		f.dispose();
         		mini.removeTrayIcon();
         		AddItem additem = new AddItem();
-        		additem.initialize();
+        		additem.initialize();	//If this new event button pressed, it opens a new window where the usern can add a new event
         	}
         });
         f.getContentPane().add(btnNewItem, BorderLayout.SOUTH);
         f.pack();
         f.setLocationRelativeTo(null);
         f.setVisible(true);
-		mini.trayIcon(f);
-		mini.notificationCalendar();
+		mini.trayIcon(f);	//In the end of the window building the method add a tray icon to the system tray
+		mini.notificationCalendar();	//Start the notification backend process
     }    
-    
+    /*
+     *	This method parse the date/time format from the ics file to a LocalDateTime format
+     */
     private static LocalDateTime convertToNewFormat(String dateStr) throws ParseException {
     	TimeZone utc = TimeZone.getTimeZone("UTC");
         SimpleDateFormat sourceFormat = new SimpleDateFormat("yyyyMMdd'T'HHmmss'Z'");
@@ -174,19 +189,26 @@ public class CalendarFrame {
         LocalDateTime returnedDate= convertToLocalDateTime(parsedDate);
         return returnedDate;
     }
-    
+    /*
+     * 	This method convert java.util.Date element to java.time.LocalDateTime
+     */
     public static LocalDateTime convertToLocalDateTime(Date dateToConvert) {
         return Instant.ofEpochMilli(dateToConvert.getTime())
           .atZone(ZoneId.systemDefault())
           .toLocalDateTime();
     }
-    
+    /*
+     * 	This method convert java.time.LocalDateTime element to java.util.Date
+     */
     public static Date convertToDate(LocalDateTime dateToConvert) {
         return java.util.Date
           .from(dateToConvert.atZone(ZoneId.systemDefault())
           .toInstant());
     }
-    
+    /*
+     *	This method set the printing format of the LocalDateTime.
+     *	With the true/false at the end we can set the format is printed with the time or without. 
+     */
     public static String printFormatDate(LocalDateTime input, boolean withTime) {
     	DateTimeFormatter formatterD = DateTimeFormatter.ofPattern("EEEE, yyyy.MMMdd");
     	DateTimeFormatter formatterT = DateTimeFormatter.ofPattern("EEEE, yyyy.MMMdd HH:mm");
@@ -199,27 +221,34 @@ public class CalendarFrame {
     	}
     	return output;
     }
-    
+    /*
+     *	The removeText method removes the unnecessary text from the date in the ics file 
+     */
     public static String removeText(String cnv) {
     	StringBuffer cnvf = new StringBuffer(cnv);
     	cnvf.delete(0,cnvf.indexOf(":")+1);
     	cnvf.deleteCharAt(cnvf.length()-1);
 		return cnvf.toString();
     }
-    
+    /*
+     *	Here we creates the Highlight Evaluator. 
+     */
     public void createEvaluator(){
-    	ArrayList<CalendarItem> callist = new ArrayList<CalendarItem>(sus);
-    	Iterator<CalendarItem> lol = callist.iterator();
-    	while (lol.hasNext()) {
-    		CalendarItem event = lol.next();
-    		LocalDateTime sus = event.getDtstart();
-    		int y = sus.getYear();
-    		int m = sus.getMonthValue()-1;
-    		int d = sus.getDayOfMonth();
+    	ArrayList<CalendarItem> callist = new ArrayList<CalendarItem>(calendarItemList);	//Creating a local copy of the list contains the calendar items
+    	Iterator<CalendarItem> iter = callist.iterator();	//For the local list we create an iterator
+    	while (iter.hasNext()) {	//With a while going trough the whole list
+    		CalendarItem event = iter.next();	//The next iterator element is claimed
+    		LocalDateTime calendarItemList = event.getdtStart();	//And from the element we create a date for the evaluator
+    		int y = calendarItemList.getYear();
+    		int m = calendarItemList.getMonthValue()-1;
+    		int d = calendarItemList.getDayOfMonth();
     		evaluator.add(createDate(y, m, d));
     	}
     }
-    
+    /*
+     * Here is the calendar importing method. This is the first thing in this view.
+     * This method imports the ics file and parse it to CalendarItem
+     */
     public void importCalendar(){
     	final String ics = Frame_main.getNewestFile().toString();
     	System.setProperty("ical4j.unfolding.relaxed", "true");
@@ -227,25 +256,27 @@ public class CalendarFrame {
     	try {
     	      CalendarBuilder builder = new CalendarBuilder();
     	      final UnfoldingReader ufrdr =new UnfoldingReader(new FileReader(ics),true);
-    	      net.fortuna.ical4j.model.Calendar calendar = builder.build(ufrdr);
-    	      List<CalendarComponent> events = calendar.getComponents(Component.VEVENT);
-    	      Iterator<CalendarComponent> iter = events.iterator(); 
-    	      while (iter.hasNext()) {
+    	      net.fortuna.ical4j.model.Calendar calendar = builder.build(ufrdr);	//Here is the calendar builder what build a calendar from the parsed ics
+    	      List<CalendarComponent> events = calendar.getComponents(Component.VEVENT);	//It's parsed to multiple VEVENT
+    	      Iterator<CalendarComponent> iter = events.iterator();	//This list of VEVENT gets an iterator
+    	      while (iter.hasNext()) {	//And with a while we go trough this list and parse it to a calendar component
     	    	CalendarComponent ize = iter.next();
     	    	String location = ize.getProperties(Property.LOCATION).toString();
     	    	String summary = ize.getProperties(Property.SUMMARY).toString();
     	    	String uid = ize.getProperties(Property.UID).toString();
     	    	String dtstartf = removeText(ize.getProperties(Property.DTSTART).toString());
     	    	String dtendf = removeText(ize.getProperties(Property.DTEND).toString());
-    	    	
-    	  		sus.add(new CalendarItem(removeText(uid), convertToNewFormat(dtstartf), convertToNewFormat(dtendf), removeText(location), removeText(summary)));
+    	    	//At the end we create a CalendarItem and add it to the public list
+    	  		calendarItemList.add(new CalendarItem(removeText(uid), convertToNewFormat(dtstartf), convertToNewFormat(dtendf), removeText(location), removeText(summary)));
     	      }
     	} 
     	catch (Throwable t) {
     	      t.printStackTrace();
     	}
     }
-
+    /*
+     * This create date method is needed for the evaluator
+     */
     public Date createDate(int y, int m, int d) {
         Calendar c = Calendar.getInstance();
         c.set(Calendar.YEAR, y);
@@ -258,10 +289,12 @@ public class CalendarFrame {
         return (c.getTime());
     }
     
-    public LocalDateTime getChoosenDate() {
-    	return choosenDate;
+    public LocalDateTime getchosenDate() {
+    	return chosenDate;
     }
-    
+    /*
+     *	Here starts the class for the tray icon 
+     */
     class Tray{
     	static TrayIcon pubI;
     	static SystemTray pubT;
@@ -312,16 +345,16 @@ public class CalendarFrame {
     	 }
 
     	public void notificationCalendar() {
-	    	Iterator<CalendarItem> iter = sus.iterator();
+	    	Iterator<CalendarItem> iter = calendarItemList.iterator();
 	    	LocalDateTime date = LocalDateTime.now();
 			Timer time = new Timer();
 			while (iter.hasNext()) {
 				CalendarItem ize = iter.next();
-				LocalDateTime dtstart = ize.getDtstart();
+				LocalDateTime dtstart = ize.getdtStart();
 				TimerTask task = new TimerTask(){
 					@Override
 					public void run() {
-					pubI.displayMessage("Esemény kezdete", "Leírás: "+ize.getSummary()+System.lineSeparator()+"Helyszín: "+ize.getLocation()+System.lineSeparator()+"Kezdés ideje: "+printFormatDate(dtstart, true)+System.lineSeparator()+"Vége: "+printFormatDate(ize.getDtend(),true), MessageType.INFO);
+					pubI.displayMessage("Esemény kezdete", "Leírás: "+ize.getsummary()+System.lineSeparator()+"Helyszín: "+ize.getlocation()+System.lineSeparator()+"Kezdés ideje: "+printFormatDate(dtstart, true)+System.lineSeparator()+"Vége: "+printFormatDate(ize.getdtEnd(),true), MessageType.INFO);
 					}
 				};
 				if(dtstart.compareTo(date) > 0)time.schedule(task, convertToDate(dtstart));

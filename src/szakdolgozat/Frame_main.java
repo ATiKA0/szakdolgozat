@@ -42,64 +42,45 @@ public class Frame_main {
 	private JPasswordField t_passwd;
 	protected String combo;
 
-	/**
-	 * Launch the application.
-	 */
+/**
+ * Launch the application with the initialize method.
+ */
 	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					Frame_main window = new Frame_main();
-					window.frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
+		EventQueue.invokeLater(new Frame_main() :: initialize);
 	}
 
-	/**
-	 * Create the application.
-	 */
-	public Frame_main() {
-		initialize();
-	}
-
-	/**
-	 * Initialize the contents of the frame.
-	 * @param passwd 
-	 * @param usr 
-	 * @throws InterruptedException 
-	 */
 	private WebDriver login(String usr, String passwd){
-		System.setProperty("webdriver.chrome.driver",".\\src\\szakdolgozat\\ChromeDriver\\chromedriver.exe");
-		HashMap<String, Object> chromePrefs = new HashMap<String, Object>();
-		chromePrefs.put("profile.default_content_settings.popups", 0);
-		ChromeOptions options = new ChromeOptions();
-		options.setExperimentalOption("prefs", chromePrefs);
-		options.setCapability(CapabilityType.ACCEPT_SSL_CERTS, true);
-		options.addArguments("disable-infobars");
-		//options.addArguments("--headless");
-		options.setAcceptInsecureCerts(true);
-		options.setUnhandledPromptBehaviour(UnexpectedAlertBehaviour.ACCEPT);
-		WebDriver driver = new ChromeDriver(options);
-		WebDriverWait wait = new WebDriverWait(driver, 5);
-		driver.get("https://neptun-web"+combo+".tr.pte.hu/hallgato/login.aspx");
-		WebElement login = driver.findElement(By.name("btnSubmit"));
-		if(login.isDisplayed()) {
-			//http://atika00707.dynu.net:8080/
-			WebElement user = driver.findElement(By.name("user"));
+		System.setProperty("webdriver.chrome.driver",".\\src\\szakdolgozat\\ChromeDriver\\chromedriver.exe");	//Set the chromedriver location
+		HashMap<String, Object> chromePrefs = new HashMap<String, Object>();	//Create a hashmap for the chrome preferences
+		chromePrefs.put("profile.default_content_settings.popups", 0);	//In the default profile disable popups
+		ChromeOptions options = new ChromeOptions();	//Creating a chrome option where we can change the settings of the chromedriver
+		options.setExperimentalOption("prefs", chromePrefs);	//Add the hashmap to the chromedriver
+		options.setCapability(CapabilityType.ACCEPT_SSL_CERTS, true);	//Set to accept SSL certifications
+		options.addArguments("disable-infobars");	//Disabling the yellow chrome infobars
+		options.addArguments("--headless");	//Run chrome in headless because we don't need to see it
+		options.setAcceptInsecureCerts(true);	//If the site don't have an SSL certification accept the insecure site
+		options.setUnhandledPromptBehaviour(UnexpectedAlertBehaviour.ACCEPT);	//If an chrome popup appears the chromedriver accept it 
+		WebDriver driver = new ChromeDriver(options);	//Here creating the chromedriver with the given options
+		WebDriverWait wait = new WebDriverWait(driver, 5);	//Here creating a wait element for the webdriver
+		driver.get("https://neptun-web"+combo+".tr.pte.hu/hallgato/login.aspx");	//Open the neptun site with a choosable neptun server 
+		WebElement login = driver.findElement(By.name("btnSubmit"));	//Searching on the site for the "Bejelentkezés" button
+		if(login.isDisplayed()) {	//If the button is appeared on the site we know the site is loaded
+			WebElement user = driver.findElement(By.name("user"));	//Finding the username field and write the username given by the user
 			user.clear();
 			user.sendKeys(usr);
-			WebElement password = driver.findElement(By.name("pwd"));
+			WebElement password = driver.findElement(By.name("pwd"));	//Do the same for the password
 			password.clear();
 			password.sendKeys(passwd);
-			login.click();
-			try {
-				wait.until(ExpectedConditions.alertIsPresent());
-				Alert alert = driver.switchTo().alert();
+			login.click();		//Click on the "Bejelentkezés" button
+			try {	//A try-catch block for the Neptun "multiple login" popup, if it's not appear the catch block will run
+				wait.until(ExpectedConditions.alertIsPresent());	//Here with the webdriverwait element we wait for 5 seconds for the popup
+				Alert alert = driver.switchTo().alert();	//With this Alert element we accept the popup
 				alert.accept();
-				Thread.sleep(5000);
+				Thread.sleep(5000);	//Wait 5 sec to load the site
+				/*
+				 * Searching for the calendar export button on the site, if it's not there the site not loaded and the login is failed
+				 * If the site not loaded the program resets the text fields and closing the chromedriver
+				 */
 				if(!driver.findElements(By.id("upBoxes_upCalendar_gdgCalendar_gdgCalendar_calendaroutlookexport")).isEmpty()){
 					JOptionPane.showMessageDialog(null, "Sikeres bejelentkezés!");
 					return driver;
@@ -112,6 +93,10 @@ public class Frame_main {
 				}
 			}
 			catch(Exception e){
+				/*
+				 * Searching for the calendar export button on the site, if it's not there the site not loaded and the login is failed
+				 * If the site not loaded the program resets the text fields and closing the chromedriver
+				 */
 				if(!driver.findElements(By.id("upBoxes_upCalendar_gdgCalendar_gdgCalendar_calendaroutlookexport")).isEmpty()){
 					JOptionPane.showMessageDialog(null, "Sikeres bejelentkezés!");
 					return driver;
@@ -133,7 +118,10 @@ public class Frame_main {
 		return driver;
 		
 	}	
-	
+/*
+ * The getNewestFile method returns the newest ics file from the user's download direcctory
+ * Ics is the calendar file what we can export from the Neptun
+ */
 	public static File getNewestFile() {
 	    File theNewestFile = null;
 	    File dir = new File("C:/Users/" + System.getProperty("user.name") + "/Downloads/");
@@ -146,7 +134,11 @@ public class Frame_main {
 	    }
 	    return theNewestFile;
 	}
-	
+/*
+ * This export method is exporting the ics file from Neptun
+ * In here the program run the login method, then clicks in the export calendar button
+ * In the and closing the webdriver and wait a bit for the download 
+ */
 	private void export(String username, String password){
 		WebDriver driver = login(username, password);
 		WebDriverWait wait = new WebDriverWait(driver, 3);
@@ -163,7 +155,9 @@ public class Frame_main {
 			e.printStackTrace();
 		}
 	}
-	
+/*
+ * Initialize the contents of the frame.
+ */
 	private void initialize() {
 		System.setProperty("file.encoding","UTF-8");
 		frame = new JFrame();
@@ -172,7 +166,7 @@ public class Frame_main {
 		
 		JButton b_login = new JButton("Bejelentkezés");
 		b_login.setBounds(159, 199, 135, 32);
-		b_login.addActionListener(new ActionListener() {
+		b_login.addActionListener(new ActionListener() {	//If the user press the Login button the app gets the login data and change to the next window
 			public void actionPerformed(ActionEvent e) {
 				username = t_usrn.getText();
 				password = t_passwd.getText();
@@ -203,7 +197,7 @@ public class Frame_main {
 		t_passwd = new JPasswordField();
 		t_passwd.addKeyListener(new KeyAdapter() {
 			@Override
-			public void keyPressed(KeyEvent e) {
+			public void keyPressed(KeyEvent e) {	//This do the same what the button do but with an "ENTER" button hit
 				 if (e.getKeyCode()==KeyEvent.VK_ENTER){
 					username = t_usrn.getText();
 					password = t_passwd.getText();
@@ -217,7 +211,9 @@ public class Frame_main {
 		t_passwd.setEchoChar('*');
 		t_passwd.setBounds(109, 153, 238, 26);
 		frame.getContentPane().add(t_passwd);
-		
+		/*
+		 *	This part is the combo box. Whit this we can change the Neptun server. 
+		 */
 		String[] choices = {"1", "2", "3", "4"};
 		final JComboBox comboServer = new JComboBox(choices);
 		comboServer.setBounds(126, 268, 38, 21);
@@ -228,5 +224,6 @@ public class Frame_main {
 		lblServer.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		lblServer.setBounds(10, 270, 118, 13);
 		frame.getContentPane().add(lblServer);
+		frame.setVisible(true);
 	}
 }

@@ -142,8 +142,8 @@ public class AddItem extends CalendarFrame {
 				else {
 					CalendarItem returned = new CalendarItem(getRandomUid(), dtstart, dtend, location, summary);
 					frame.setVisible(false);
-					sus.add(returned);
-					Date createdDate = createDate(returned.getDtstart().getYear(),returned.getDtstart().getMonthValue()-1,returned.getDtstart().getDayOfMonth());
+					calendarItemList.add(returned);
+					Date createdDate = createDate(returned.getdtStart().getYear(),returned.getdtStart().getMonthValue()-1,returned.getdtStart().getDayOfMonth());
 					evaluator.add(createdDate);
 					mini.removeTrayIcon();
 					display();

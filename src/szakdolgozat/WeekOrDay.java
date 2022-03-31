@@ -35,7 +35,7 @@ public class WeekOrDay extends CalendarFrame{
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				CalendarWeekView week = new CalendarWeekView();
-		    	week.start(getChoosenDate());
+		    	week.start(getchosenDate());
 		    	frame.dispose();
 			}
 		});
@@ -46,7 +46,7 @@ public class WeekOrDay extends CalendarFrame{
 		lblText.setBounds(109, 27, 113, 13);
 		frame.getContentPane().add(lblText);
 		
-		JLabel lblDate = new JLabel(printFormatDate(getChoosenDate(), false));
+		JLabel lblDate = new JLabel(printFormatDate(getchosenDate(), false));
 		lblDate.setBounds(232, 27, 184, 13);
 		frame.getContentPane().add(lblDate);
 		frame.setVisible(true);
