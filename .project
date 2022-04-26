@@ -14,4 +14,10 @@
 	<natures>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 	</natures>
+	<variableList>
+		<variable>
+			<name>chromedriver</name>
+			<value>file:/C:/Users/gluck/Desktop/Szakdolgozat/szakdolgozat/resources/drivers/chromedriver.exe</value>
+		</variable>
+	</variableList>
 </projectDescription>

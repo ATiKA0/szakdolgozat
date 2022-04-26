@@ -149,7 +149,6 @@ public class CalendarWeekView extends CalendarFrame{
 		for(CalendarItem item : isEqualWeek) {
 			cols=item.getdtStart().getDayOfWeek().getValue();
 			rows=item.getdtStart().getHour()*2;
-			System.out.println(rows);
 			if(item.getdtStart().getMinute()>30)rows++;
 			String print = printItem(item);
 			int l = print.length()/20;

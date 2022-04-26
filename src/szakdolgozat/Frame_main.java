@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -31,7 +32,8 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import javax.swing.JComboBox;
+
+import io.github.bonigarcia.wdm.WebDriverManager;
 
 public class Frame_main {
 
@@ -50,14 +52,15 @@ public class Frame_main {
 	}
 
 	private WebDriver login(String usr, String passwd){
-		System.setProperty("webdriver.chrome.driver",".\\src\\szakdolgozat\\ChromeDriver\\chromedriver.exe");	//Set the chromedriver location
+		WebDriverManager.chromedriver().setup();
 		HashMap<String, Object> chromePrefs = new HashMap<String, Object>();	//Create a hashmap for the chrome preferences
 		chromePrefs.put("profile.default_content_settings.popups", 0);	//In the default profile disable popups
+		chromePrefs.put("download.default_directory", System.getProperty("user.dir"));
 		ChromeOptions options = new ChromeOptions();	//Creating a chrome option where we can change the settings of the chromedriver
 		options.setExperimentalOption("prefs", chromePrefs);	//Add the hashmap to the chromedriver
 		options.setCapability(CapabilityType.ACCEPT_SSL_CERTS, true);	//Set to accept SSL certifications
 		options.addArguments("disable-infobars");	//Disabling the yellow chrome infobars
-		options.addArguments("--headless");	//Run chrome in headless because we don't need to see it
+		//options.addArguments("--headless");	//Run chrome in headless because we don't need to see it
 		options.setAcceptInsecureCerts(true);	//If the site don't have an SSL certification accept the insecure site
 		options.setUnhandledPromptBehaviour(UnexpectedAlertBehaviour.ACCEPT);	//If an chrome popup appears the chromedriver accept it 
 		WebDriver driver = new ChromeDriver(options);	//Here creating the chromedriver with the given options
@@ -119,12 +122,12 @@ public class Frame_main {
 		
 	}	
 /*
- * The getNewestFile method returns the newest ics file from the user's download direcctory
+ * The getNewestFile method returns the newest ics file from the user's desktop direcctory
  * Ics is the calendar file what we can export from the Neptun
  */
 	public static File getNewestFile() {
 	    File theNewestFile = null;
-	    File dir = new File("C:/Users/" + System.getProperty("user.name") + "/Downloads/");
+	    File dir = new File(System.getProperty("user.dir"));
 	    FileFilter fileFilter = new WildcardFileFilter("*." + "ics");
 	    File[] files = dir.listFiles(fileFilter);
 
