@@ -23,6 +23,11 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.FileReader;
 import java.nio.charset.Charset;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
@@ -121,13 +126,14 @@ public class CalendarFrame {
      * @wbp.parser.entryPoint
      */
     /*
-     * This is the method wich runs first and set everything up when this frame is opened
+     * This is the method which runs first and set everything up when this frame is opened
      */
     void firstRun() {
     	Locale.setDefault(new Locale("hu", "HU"));	//Set the default locale for the dates.
     	System.setProperty("file.encoding","UTF-8");	//Set the file encoding to UTF-8
     	System.out.println(Charset.defaultCharset());
-    	importCalendar();
+    	//importCalendar();
+    	getFromSql();
     	createEvaluator();
     	display();
     }
@@ -256,30 +262,78 @@ public class CalendarFrame {
     	final String ics = Frame_main.getNewestFile().toString();
     	System.setProperty("ical4j.unfolding.relaxed", "true");
     	System.setProperty("ical4j.parsing.relaxed", "true");
+    	Connection connection;
+    	String loggedUser= Login_main.getUsrn().toLowerCase();
     	try {
-    	      CalendarBuilder builder = new CalendarBuilder();
-    	      final UnfoldingReader ufrdr =new UnfoldingReader(new FileReader(ics),true);
-    	      net.fortuna.ical4j.model.Calendar calendar = builder.build(ufrdr);	//Here is the calendar builder what build a calendar from the parsed ics
-    	      List<CalendarComponent> events = calendar.getComponents(Component.VEVENT);	//It's parsed to multiple VEVENT
-    	      Iterator<CalendarComponent> iter = events.iterator();	//This list of VEVENT gets an iterator
-    	      while (iter.hasNext()) {	//And with a while we go trough this list and parse it to a calendar component
-    	    	CalendarComponent ize = iter.next();
-    	    	String location = ize.getProperties(Property.LOCATION).toString();
-    	    	String summary = ize.getProperties(Property.SUMMARY).toString();
-    	    	String uid = ize.getProperties(Property.UID).toString();
-    	    	String dtstartf = removeText(ize.getProperties(Property.DTSTART).toString());
-    	    	String dtendf = removeText(ize.getProperties(Property.DTEND).toString());
-    	    	//At the end we create a CalendarItem and add it to the public list
-    	  		calendarItemList.add(new CalendarItem(removeText(uid), convertToNewFormat(dtstartf), convertToNewFormat(dtendf), removeText(location), removeText(summary)));
+    		  Class.forName("com.mysql.cj.jdbc.Driver");
+			  connection = DriverManager.getConnection(
+	                "jdbc:mysql://localhost:3306/orarend",
+	                "root", "");
+			  System.out.println("Database connected!");
+		      CalendarBuilder builder = new CalendarBuilder();
+		      final UnfoldingReader ufrdr =new UnfoldingReader(new FileReader(ics),true);
+		      net.fortuna.ical4j.model.Calendar calendar = builder.build(ufrdr);	//Here is the calendar builder what build a calendar from the parsed ics
+		      List<CalendarComponent> events = calendar.getComponents(Component.VEVENT);	//It's parsed to multiple VEVENT
+		      Iterator<CalendarComponent> iter = events.iterator();	//This list of VEVENT gets an iterator
+		      while (iter.hasNext()) {	//And with a while we go trough this list and parse it to a calendar component
+		    	CalendarComponent ize = iter.next();
+		    	String location = ize.getProperties(Property.LOCATION).toString();
+		    	String summary = ize.getProperties(Property.SUMMARY).toString();
+		    	String uid = ize.getProperties(Property.UID).toString();
+		    	String dtstartf = removeText(ize.getProperties(Property.DTSTART).toString());
+		    	String dtendf = removeText(ize.getProperties(Property.DTEND).toString());
+		    	insert_into_sql(connection, loggedUser, removeText(uid), summary, location, dtstartf, dtendf);
+		    	//At the end we create a CalendarItem and add it to the public list
+		  		//calendarItemList.add(new CalendarItem(removeText(uid), convertToNewFormat(dtstartf), convertToNewFormat(dtendf), removeText(location), removeText(summary)));
     	      }
+		      connection.close();
     	} 
     	catch (Throwable t) {
     	      t.printStackTrace();
     	}
     }
     
-    public void insert_into_sql() {
-    	
+    public void insert_into_sql(Connection connection,String user,  String uid, String summary, String location, String dtstart, String dtend) {
+    	try {
+			String quary1 = "INSERT INTO "+user+" (`uid`, `summary`, `location`, `startdate`, `enddate`) VALUES ('"+uid+"', '"+summary+"', '"+location+"', '"+dtstart+"', '"+dtend+"');";
+			Statement statement = connection.createStatement();
+			statement.addBatch(quary1);
+			statement.executeBatch();
+			statement.close();
+    	} catch (SQLException e) {
+			e.printStackTrace();
+		}
+    }
+    
+    public void getFromSql() {
+    	String loggedUser = Login_main.getUsrn().toLowerCase();
+    	Connection connection;
+    	try {
+			Class.forName("com.mysql.cj.jdbc.Driver");
+			connection = DriverManager.getConnection(
+	                "jdbc:mysql://localhost:3306/orarend",
+	                "root", "");
+			System.out.println("Database connected!");
+			String quary= "SELECT * FROM "+loggedUser+"";
+			Statement statement = connection.createStatement();
+			ResultSet result = statement.executeQuery(quary);
+			while(result.next()) {
+				String uid = result.getString(1);
+				String dtstartf = result.getString(4);
+				String dtendf = result.getString(5);
+				String location = result.getString(3);
+				String summary = result.getString(2);
+				calendarItemList.add(new CalendarItem(removeText(uid), convertToNewFormat(dtstartf), convertToNewFormat(dtendf), removeText(location), removeText(summary)));
+				result.next();
+			}
+			
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
     }
     
     /*

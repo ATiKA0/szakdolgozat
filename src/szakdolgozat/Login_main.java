@@ -60,7 +60,10 @@ public class Login_main {
 		b_login.setBounds(68, 194, 135, 32);
 		b_login.addActionListener(new ActionListener() {	//Login button
 			public void actionPerformed(ActionEvent e) {
-				if(isExist(t_usrn.getText(),t_passwd.getText()))CalendarFrame.main(null);
+				if(isExist(t_usrn.getText(),t_passwd.getText())) {
+					frmBejelentkezs.dispose();
+					CalendarFrame.main(null);
+				}
 			}
 		});
 		frmBejelentkezs.getContentPane().setLayout(null);
@@ -86,7 +89,10 @@ public class Login_main {
 			@Override
 			public void keyPressed(KeyEvent e) {	//This do the same what the button do but with an "ENTER" button hit
 				 if (e.getKeyCode()==KeyEvent.VK_ENTER){
-					 if(isExist(t_usrn.getText(),t_passwd.getText()))CalendarFrame.main(null);
+					 if(isExist(t_usrn.getText(),t_passwd.getText())) {
+						 frmBejelentkezs.dispose();
+						 CalendarFrame.main(null);
+					 }
 				 }
 				 }
 		});
@@ -98,6 +104,8 @@ public class Login_main {
 		b_registration.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {		//Registration button
 				registration(t_usrn.getText(),t_passwd.getText());
+				frmBejelentkezs.dispose();
+				CalendarFrame.main(null);
 			}
 		});
 		b_registration.setBounds(271, 194, 135, 32);
@@ -135,7 +143,7 @@ public class Login_main {
 			System.out.println("Database connected!");
 			if(isExist(name,passwd)==true) JOptionPane.showMessageDialog(null, "Ez a felhasználó már létezik!");
 			String quary1 = "INSERT INTO `login` (`name`, `passwd`) VALUES ('"+name+"', '"+passwd+"');";
-			String quary2 = "CREATE TABLE `orarend`.`"+name+"` (`uid` VARCHAR(40) NOT NULL , `summary` TINYTEXT NOT NULL , `location` TINYTEXT NOT NULL , `startdate` DATETIME NOT NULL , `enddate` DATETIME NOT NULL , PRIMARY KEY (`uid`));";
+			String quary2 = "CREATE TABLE `orarend`.`"+name+"` (`uid` VARCHAR(40) NOT NULL , `summary` TINYTEXT NOT NULL , `location` TINYTEXT NOT NULL , `startdate` VARCHAR(17) NOT NULL , `enddate` VARCHAR(17) NOT NULL , PRIMARY KEY (`uid`));";
 			Statement state = connection.createStatement();
 			state.addBatch(quary1);
 			state.addBatch(quary2);
