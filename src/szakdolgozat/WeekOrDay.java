@@ -11,7 +11,13 @@ public class WeekOrDay extends CalendarFrame{
 	/**
 	 * @wbp.parser.entryPoint
 	 */
+	
+	/*
+	 * This is the window where we can select which view want to see. Can select between day and week view.
+	 * In the top of the window we can see the chosen date.
+	 */
 	void WeekOrDayinit() {
+		System.setProperty("file.encoding","UTF-8");
 		JFrame frame;
 		frame = new JFrame();
 		frame.setBounds(100, 100, 501, 193);

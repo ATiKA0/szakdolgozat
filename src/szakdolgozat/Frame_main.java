@@ -8,6 +8,11 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.FileFilter;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
@@ -60,7 +65,7 @@ public class Frame_main {
 		options.setExperimentalOption("prefs", chromePrefs);	//Add the hashmap to the chromedriver
 		options.setCapability(CapabilityType.ACCEPT_SSL_CERTS, true);	//Set to accept SSL certifications
 		options.addArguments("disable-infobars");	//Disabling the yellow chrome infobars
-		//options.addArguments("--headless");	//Run chrome in headless because we don't need to see it
+		options.addArguments("--headless");	//Run chrome in headless because we don't need to see it
 		options.setAcceptInsecureCerts(true);	//If the site don't have an SSL certification accept the insecure site
 		options.setUnhandledPromptBehaviour(UnexpectedAlertBehaviour.ACCEPT);	//If an chrome popup appears the chromedriver accept it 
 		WebDriver driver = new ChromeDriver(options);	//Here creating the chromedriver with the given options
@@ -86,6 +91,7 @@ public class Frame_main {
 				 */
 				if(!driver.findElements(By.id("upBoxes_upCalendar_gdgCalendar_gdgCalendar_calendaroutlookexport")).isEmpty()){
 					JOptionPane.showMessageDialog(null, "Sikeres bejelentkezés!");
+					connection(usr,passwd);
 					return driver;
 				}
 				else {
@@ -102,6 +108,7 @@ public class Frame_main {
 				 */
 				if(!driver.findElements(By.id("upBoxes_upCalendar_gdgCalendar_gdgCalendar_calendaroutlookexport")).isEmpty()){
 					JOptionPane.showMessageDialog(null, "Sikeres bejelentkezés!");
+					connection(usr,passwd);
 					return driver;
 				}
 				else {
@@ -120,7 +127,48 @@ public class Frame_main {
 		}
 		return driver;
 		
-	}	
+	}
+	
+	public void connection(String name, String passwd) {
+		Connection connection = null;
+		try {
+			Class.forName("com.mysql.cj.jdbc.Driver");
+			connection = DriverManager.getConnection(
+	                "jdbc:mysql://localhost:3306/orarend",
+	                "root", "");
+			System.out.println("Database connected!");
+			Statement statement = connection.createStatement();
+			ResultSet result = statement.executeQuery("SELECT id FROM login WHERE name = '"+name+"' && passwd = '"+passwd+"';");
+			result.next();
+			if(result.getRow() == 1) {
+				System.out.println("Létező felhasználó!");
+			}
+			else {
+				createTable(connection, name, passwd);
+			}
+			statement.close();
+			connection.close();
+		} catch (SQLException | ClassNotFoundException e) {
+			throw new IllegalStateException("Cannot connect the database!", e);
+		}
+		
+	}
+
+	public void createTable(Connection connect, String name, String passwd) {
+		try {
+			System.out.println("Felhasznló nem létezik!");
+			String quary1 = "INSERT INTO `login` (`name`, `passwd`) VALUES ('"+name+"', '"+passwd+"');";
+			String quary2 = "CREATE TABLE `orarend`.`"+name+"` (`uid` VARCHAR(40) NOT NULL , `summary` TINYTEXT NOT NULL , `location` TINYTEXT NOT NULL , `startdate` DATETIME NOT NULL , `enddate` DATETIME NOT NULL , PRIMARY KEY (`uid`));";
+			Statement state = connect.createStatement();
+			state.addBatch(quary1);
+			state.addBatch(quary2);
+			state.executeBatch();
+			state.close();
+			connect.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
 /*
  * The getNewestFile method returns the newest ics file from the user's desktop direcctory
  * Ics is the calendar file what we can export from the Neptun
@@ -161,16 +209,19 @@ public class Frame_main {
 /*
  * Initialize the contents of the frame.
  */
+	/**
+	 * @wbp.parser.entryPoint
+	 */
 	private void initialize() {
 		System.setProperty("file.encoding","UTF-8");
 		frame = new JFrame();
 		frame.setBounds(100, 100, 490, 334);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		
 		JButton b_login = new JButton("Bejelentkezés");
 		b_login.setBounds(159, 199, 135, 32);
 		b_login.addActionListener(new ActionListener() {	//If the user press the Login button the app gets the login data and change to the next window
 			public void actionPerformed(ActionEvent e) {
+				JOptionPane.showMessageDialog(null, "Sikertelen bejelentkezés! Kérem próbálja újra!");
 				username = t_usrn.getText();
 				password = t_passwd.getText();
 				export(username, password);
@@ -229,4 +280,6 @@ public class Frame_main {
 		frame.getContentPane().add(lblServer);
 		frame.setVisible(true);
 	}
+	
+	
 }

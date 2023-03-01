@@ -15,7 +15,7 @@ public class CalendarDayView extends CalendarFrame {
 	 * @wbp.parser.entryPoint
 	 */
 	public void listView() {
-		
+		System.setProperty("file.encoding","UTF-8");
 		JFrame frm = new JFrame();	//Initialize window frame
 		frm.addWindowListener(new WindowAdapter() {	//When frame is closed the program goes back to the main calendar window
 			@Override

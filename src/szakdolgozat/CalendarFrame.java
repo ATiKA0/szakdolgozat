@@ -22,6 +22,7 @@ import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.FileReader;
+import java.nio.charset.Charset;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
@@ -55,7 +56,7 @@ public class CalendarFrame {
  *	Public variables 
  */
 	static ArrayList<CalendarItem> calendarItemList = new ArrayList<CalendarItem>();	//This is the list where the calendar items stored from the ics file
-	static private LocalDateTime chosenDate;	//This is the chosen date from the calendar view
+	static private LocalDateTime chosenDate = LocalDateTime.now();	//This is the chosen date from the calendar view
 	static HighlightEvaluator evaluator = new HighlightEvaluator();
 	public Tray mini = new Tray();
 /*
@@ -123,6 +124,9 @@ public class CalendarFrame {
      * This is the method wich runs first and set everything up when this frame is opened
      */
     void firstRun() {
+    	Locale.setDefault(new Locale("hu", "HU"));	//Set the default locale for the dates.
+    	System.setProperty("file.encoding","UTF-8");	//Set the file encoding to UTF-8
+    	System.out.println(Charset.defaultCharset());
     	importCalendar();
     	createEvaluator();
     	display();
@@ -132,8 +136,6 @@ public class CalendarFrame {
      * Creating the window view.
      */
      void display() {
-    	Locale.setDefault(new Locale("hu", "HU"));	//Set the default locale for the dates.
-    	System.setProperty("file.encoding","UTF-8");	//Set the file encoding to UTF-8
         JFrame f = new JFrame("Naptár");
         f.addWindowListener(new WindowAdapter() {	//This window listener is for iconify to the system tray. 
         	@Override
@@ -148,6 +150,7 @@ public class CalendarFrame {
         JCalendar jc = new JCalendar();	//Creating the JCalendar element
         jc.getDayChooser().setDayBordersVisible(true);
         jc.getDayChooser().addDateEvaluator(evaluator);	//Add the evaluator for the coloring
+        jc.setDate(convertToDate(chosenDate));
         jc.getDayChooser().addPropertyChangeListener("day", new PropertyChangeListener() {	//Listener for the date choosing with mouse click
         	@Override
             public void propertyChange(PropertyChangeEvent e) {
@@ -274,6 +277,11 @@ public class CalendarFrame {
     	      t.printStackTrace();
     	}
     }
+    
+    public void insert_into_sql() {
+    	
+    }
+    
     /*
      * This create date method is needed for the evaluator
      */
@@ -296,10 +304,13 @@ public class CalendarFrame {
      *	Here starts the class for the tray icon 
      */
     class Tray{
-    	static TrayIcon pubI;
-    	static SystemTray pubT;
+    	static TrayIcon pubI;	//The tray icon
+    	static SystemTray pubT;	//The system tray
+    	/*
+    	 * This is the method for activating the tray icon
+    	 */
     	 public void trayIcon(JFrame f) {
-    		 	if (!SystemTray.isSupported()) {
+    		 	if (!SystemTray.isSupported()) {	//Check the system tray for trayicon support
     		 		System.out.println("SystemTray is not supported");
     	            return;
     	        }

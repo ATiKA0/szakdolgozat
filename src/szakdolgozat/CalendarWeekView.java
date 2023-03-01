@@ -1,26 +1,22 @@
 package szakdolgozat;
 
 import javax.swing.*;
-import javax.swing.event.*;
 import javax.swing.table.*;
-import javax.swing.text.BadLocationException;
-
 import java.awt.*;
 import java.awt.event.*;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.Month;
 import java.time.temporal.TemporalAdjusters;
 import java.time.temporal.WeekFields;
 import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeEvent;
- 
+/*
+ * cLass variables 
+ */
 public class CalendarWeekView extends CalendarFrame{
     static JTable tblCalendar;
     static JFrame frmMain;
@@ -36,7 +32,7 @@ public class CalendarWeekView extends CalendarFrame{
      * @wbp.parser.entryPoint
      */
     public void start(LocalDateTime dateImp){
-    	
+    	System.setProperty("file.encoding","UTF-8");
     	WeekFields weekNumbering = WeekFields.of(new Locale("hu","HU"));
     	dateToOpen = dateImp;
         weekOfYear = dateToOpen.get(weekNumbering.weekOfWeekBasedYear());
@@ -54,9 +50,9 @@ public class CalendarWeekView extends CalendarFrame{
         		display();
         	}
         });
-        frmMain.setSize(1040, 651); //Set size to 400x400 pixels
-        pane = frmMain.getContentPane(); //Get content pane
-        pane.setLayout(null); //Apply null layout
+        frmMain.setSize(1040, 651);
+        pane = frmMain.getContentPane();
+        pane.setLayout(null);
         frmMain.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
         mtblCalendar = new DefaultTableModel(){public boolean isCellEditable(int rowIndex, int mColIndex){return false;}};
         tblCalendar = new JTable(mtblCalendar);
@@ -66,7 +62,7 @@ public class CalendarWeekView extends CalendarFrame{
         tblCalendar.setFont(new Font("Tahoma", Font.PLAIN, 10));
         stblCalendar = new JScrollPane(tblCalendar);
         pnlCalendar = new JPanel(null);
-        tblCalendar.addMouseListener(new MouseAdapter() {
+        tblCalendar.addMouseListener(new MouseAdapter() {	//This is the listener for clicking on an elemnt in the table. When clicked shows the full information about lesson.
             @Override
             public void mouseClicked(MouseEvent arg0) {
                 if (arg0.getClickCount() == 1) { 
@@ -75,7 +71,7 @@ public class CalendarWeekView extends CalendarFrame{
 
                     int row = tblCalendar.getSelectedRow();
                     String str = (String) tblCalendar.getValueAt(row, column);
-                    if(str!="") {
+                    if(str!=null) {
                     	JOptionPane.showMessageDialog(null, str);
                     }
                     
@@ -83,7 +79,7 @@ public class CalendarWeekView extends CalendarFrame{
             }
         });
         //Set border
-        pnlCalendar.setBorder(BorderFactory.createTitledBorder("Heti nézet"));
+        pnlCalendar.setBorder(BorderFactory.createTitledBorder("Heti nézet - Kattintással nagyítható"));
          
         //Add controls to pane
         pane.add(pnlCalendar);
@@ -114,7 +110,8 @@ public class CalendarWeekView extends CalendarFrame{
         	mtblCalendar.setValueAt(times.get(f), f, 0);
         }
         
-        tblCalendar.getParent().setBackground(tblCalendar.getBackground()); //Set background
+        //Set background
+        tblCalendar.getParent().setBackground(tblCalendar.getBackground()); 
  
         //No resize/reorder
         tblCalendar.getTableHeader().setResizingAllowed(true);
@@ -132,59 +129,83 @@ public class CalendarWeekView extends CalendarFrame{
         mini.trayIcon(frmMain);
         mini.notificationCalendar();
     }
-
+    /*
+     * This function called when the table created. This is the function which writes the lessons in the table. 
+     * 
+     */
     public static void refreshCalendar(){  
         
-        Stream<LocalDate> dates = firstDayOfWeek.toLocalDate().datesUntil(lastDayOfWeek.toLocalDate().plusDays(1));
-        List<LocalDate> dateslist = dates.collect(Collectors.toList());
-        ArrayList<CalendarItem> isEqualWeek = new ArrayList<CalendarItem>();
-		int i = 0;
+        Stream<LocalDate> dates = firstDayOfWeek.toLocalDate().datesUntil(lastDayOfWeek.toLocalDate().plusDays(1));	//Get the days of the week
+        List<LocalDate> dateslist = dates.collect(Collectors.toList());	//Get the dates to a list
+        ArrayList<CalendarItem> isEqualWeek = new ArrayList<CalendarItem>();	//Make a list for the items is on the selected week
 		for (LocalDate dat : dateslist) {
 		for (CalendarItem d : calendarItemList) {
-			if(d.getdtStart().toLocalDate().equals(dat))isEqualWeek.add(d);
+			if(d.getdtStart().toLocalDate().equals(dat))isEqualWeek.add(d);	//Collects the items that on the selected week by the start date
 		}
 		}
 		
 		int rows,cols,rowe,cole;
 		for(CalendarItem item : isEqualWeek) {
-			cols=item.getdtStart().getDayOfWeek().getValue();
-			rows=item.getdtStart().getHour()*2;
-			if(item.getdtStart().getMinute()>30)rows++;
-			String print = printItem(item);
-			int l = print.length()/20;
-			tblCalendar.setRowHeight(rows,21*l);
+			cols=item.getdtStart().getDayOfWeek().getValue();	//Set the colum by the day of the week
+			rows=item.getdtStart().getHour()*2;	//Set the row by the starting hour
+			if(item.getdtStart().getMinute()>30)rows++;	//If the start time is more the half hour move a row lower.
+			String print = printItem(item);	//Print the item to the cell
+			
+			int l = print.length()/20;	//Check the text's length.
+			if(l<1) {
 			mtblCalendar.setValueAt(printItem(item), rows, cols);
 			cole=item.getdtEnd().getDayOfWeek().getValue();
 			rowe=item.getdtEnd().getHour()*2;
 			if(item.getdtEnd().getMinute()>30)rowe++;
 			for(int c = rows+1; c<=rowe; c++)
 			{
-				tblCalendar.setRowHeight(c,21*l);
 				mtblCalendar.setValueAt("", c, cole);
 			}
-			
+			}
+			else {
+				int mag = tblCalendar.getRowHeight();
+				tblCalendar.setRowHeight(rows,mag+21*l);
+				mtblCalendar.setValueAt(printItem(item), rows, cols);
+				cole=item.getdtEnd().getDayOfWeek().getValue();
+				rowe=item.getdtEnd().getHour()*2;
+				if(item.getdtEnd().getMinute()>30)rowe++;
+				for(int c = rows+1; c<=rowe; c++)
+				{
+					tblCalendar.setRowHeight(c,mag + 21*l);
+					mtblCalendar.setValueAt("", c, cole);
+				}
+			}
 		}
 
         //Apply renderers
         tblCalendar.setDefaultRenderer(tblCalendar.getColumnClass(1), new tblCalendarRenderer());
     }
-    
+    /*
+     * With this method print the items in the item with the correct format in the cell.
+     */
     private static String printItem(CalendarItem input) {
     	StringBuffer cnvt = new StringBuffer(input.getsummary());
-    	String type;
-    	if(input.getsummary().contains("EA")) {
-    		type = " - Előadás";
+    	try {
+	    	String type;
+	    	if(input.getsummary().contains("EA")) {
+	    		type = " - Előadás";
+	    	}
+	    	else if(input.getsummary().contains("GY")) {
+	    		type = " - Gyakorlat";
+	    	}
+	    	else {
+	    		type = "";
+	    	}
+	    	cnvt.delete(cnvt.indexOf("-",0), cnvt.length());
+	    	return cnvt.toString()+type+" - "+input.getlocation();
+	    	}
+    	catch(Exception e) {
+    		return input.getsummary();
     	}
-    	else if(input.getsummary().contains("GY")) {
-    		type = " - Gyakorlat";
-    	}
-    	else {
-    		type = "";
-    	}
-    	cnvt.delete(cnvt.indexOf("-",0), cnvt.length());
-    	return cnvt.toString()+type+" - "+input.getlocation();
     }
-    
+    /*
+     * This is the table renderer which set the colors and formats for the table.
+     */
     static class tblCalendarRenderer extends JTextArea implements TableCellRenderer{
     	public tblCalendarRenderer() {
     		setLineWrap(true);
@@ -194,7 +215,7 @@ public class CalendarWeekView extends CalendarFrame{
             if (column == 6 || column == 7){ //Week-end
                 setBackground(new Color(255, 220, 220));
             }
-            else{ //Wee
+            else{ //Week days
                 setBackground(new Color(255, 255, 255));
             }
             if(value != null && column != 0)

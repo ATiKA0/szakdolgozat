@@ -24,6 +24,10 @@ public class AddItem extends CalendarFrame {
 	/**
 	 * @wbp.parser.entryPoint
 	 */
+	
+	/*
+	 * In this window we can add a new lesson or an appointment to the calendar.
+	 */
 	public void initialize() {
 		System.setProperty("file.encoding","UTF-8");
 		JFrame frame  = new JFrame();
@@ -117,13 +121,14 @@ public class AddItem extends CalendarFrame {
 		frame.getContentPane().add(dateDtend, gbc_dateDtend);
 		
 		JButton btnSend = new JButton("Hozzáadás");
-		btnSend.addMouseListener(new MouseAdapter() {
+		btnSend.addMouseListener(new MouseAdapter() {	//This is the listener for the add new lesson button.
 			public void mousePressed(MouseEvent e) {
+				// Gets the summary and the location of the lesson.
 				String summary = textSummary.getText();
 				String location = textLocation.getText();
 				LocalDateTime dtstart = null; 
 				LocalDateTime dtend = null;
-				try {
+				try {	//This try-catch block is checks if the date format is correct by try to convert to LocalDate format.
 				dtstart = convertToLocalDateTime(dateDtstart.getDate());
 				dtend = convertToLocalDateTime(dateDtend.getDate());
 				}
@@ -131,15 +136,15 @@ public class AddItem extends CalendarFrame {
 					JOptionPane.showMessageDialog(null, "Hibás dátum!");
 					textSummary.setText(null); textLocation.setText(null); dateDtstart.setDate(new Date()); dateDtend.setDate(new Date());
 				}
-				if(summary.isEmpty()||location.isEmpty()||dateDtstart.equals(null)||dtend.equals(null)) {
+				if(summary.isEmpty()||location.isEmpty()||dateDtstart.equals(null)||dtend.equals(null)) { //Check for empty boxes.
 					JOptionPane.showMessageDialog(null, "Kitöltetlen mező!");
 					textSummary.setText(null); textLocation.setText(null); dateDtstart.setDate(new Date()); dateDtend.setDate(new Date());
 				}
-				else if(dtstart.isAfter(dtend)) {
+				else if(dtstart.isAfter(dtend)) {	//Checks the date of start is not after the date of end of lesson.
 					JOptionPane.showMessageDialog(null, "Hibás dátum!");
 					textSummary.setText(null); textLocation.setText(null); dateDtstart.setDate(new Date()); dateDtend.setDate(new Date());
 				}
-				else {
+				else {	//If everything is correct adds to the evaluator list and closes the window.
 					CalendarItem returned = new CalendarItem(getRandomUid(), dtstart, dtend, location, summary);
 					frame.setVisible(false);
 					calendarItemList.add(returned);
@@ -160,7 +165,9 @@ public class AddItem extends CalendarFrame {
 		mini.trayIcon(frame);
 		mini.notificationCalendar();
 	}
-	
+	/*
+	 *	This function generates a random UID for a lesson and returns as a string.
+	 */
 	private String getRandomUid() {
         String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890";
         StringBuilder rand = new StringBuilder();
