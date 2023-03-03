@@ -64,6 +64,7 @@ public class CalendarFrame {
 	static private LocalDateTime chosenDate = LocalDateTime.now();	//This is the chosen date from the calendar view
 	static HighlightEvaluator evaluator = new HighlightEvaluator();
 	public Tray mini = new Tray();
+	private final JButton btnNeptun = new JButton("Neptun szinkronizálás");
 /*
  *	This is the highlight evaluator. This is an imported class for the JCalendar.
  *	This is used for highlight the dates when there is an event.
@@ -155,6 +156,16 @@ public class CalendarFrame {
         
         JCalendar jc = new JCalendar();	//Creating the JCalendar element
         jc.getDayChooser().setDayBordersVisible(true);
+        btnNeptun.addMouseListener(new MouseAdapter() {
+        	@Override
+        	public void mousePressed(MouseEvent e) {
+        		calendarItemList.clear();
+        		importCalendar();
+        		f.dispose();
+        		firstRun();
+        	}
+        });
+        jc.getDayChooser().add(btnNeptun, BorderLayout.SOUTH);
         jc.getDayChooser().addDateEvaluator(evaluator);	//Add the evaluator for the coloring
         jc.setDate(convertToDate(chosenDate));
         jc.getDayChooser().addPropertyChangeListener("day", new PropertyChangeListener() {	//Listener for the date choosing with mouse click
@@ -295,7 +306,7 @@ public class CalendarFrame {
     
     public void insert_into_sql(Connection connection,String user,  String uid, String summary, String location, String dtstart, String dtend) {
     	try {
-			String quary1 = "INSERT INTO "+user+" (`uid`, `summary`, `location`, `startdate`, `enddate`) VALUES ('"+uid+"', '"+summary+"', '"+location+"', '"+dtstart+"', '"+dtend+"');";
+			String quary1 = "INSERT IGNORE INTO "+user+" (`uid`, `summary`, `location`, `startdate`, `enddate`) VALUES ('"+uid+"', '"+summary+"', '"+location+"', '"+dtstart+"', '"+dtend+"');";
 			Statement statement = connection.createStatement();
 			statement.addBatch(quary1);
 			statement.executeBatch();
