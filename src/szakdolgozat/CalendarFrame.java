@@ -133,7 +133,7 @@ public class CalendarFrame {
     	Locale.setDefault(new Locale("hu", "HU"));	//Set the default locale for the dates.
     	System.setProperty("file.encoding","UTF-8");	//Set the file encoding to UTF-8
     	System.out.println(Charset.defaultCharset());
-    	//importCalendar();
+    	importCalendar();
     	getFromSql();
     	createEvaluator();
     	display();
@@ -160,9 +160,8 @@ public class CalendarFrame {
         	@Override
         	public void mousePressed(MouseEvent e) {
         		calendarItemList.clear();
-        		importCalendar();
+        		Frame_main.main(null);
         		f.dispose();
-        		firstRun();
         	}
         });
         jc.getDayChooser().add(btnNeptun, BorderLayout.SOUTH);
@@ -293,18 +292,19 @@ public class CalendarFrame {
 		    	String uid = ize.getProperties(Property.UID).toString();
 		    	String dtstartf = removeText(ize.getProperties(Property.DTSTART).toString());
 		    	String dtendf = removeText(ize.getProperties(Property.DTEND).toString());
-		    	insert_into_sql(connection, loggedUser, removeText(uid), summary, location, dtstartf, dtendf);
+		    	insertIntoSql(connection, loggedUser, removeText(uid), summary, location, dtstartf, dtendf);
 		    	//At the end we create a CalendarItem and add it to the public list
 		  		//calendarItemList.add(new CalendarItem(removeText(uid), convertToNewFormat(dtstartf), convertToNewFormat(dtendf), removeText(location), removeText(summary)));
     	      }
 		      connection.close();
+		      Frame_main.getNewestFile().delete();
     	} 
     	catch (Throwable t) {
     	      t.printStackTrace();
     	}
     }
     
-    public void insert_into_sql(Connection connection,String user,  String uid, String summary, String location, String dtstart, String dtend) {
+    public static void insertIntoSql(Connection connection,String user,  String uid, String summary, String location, String dtstart, String dtend) {
     	try {
 			String quary1 = "INSERT IGNORE INTO "+user+" (`uid`, `summary`, `location`, `startdate`, `enddate`) VALUES ('"+uid+"', '"+summary+"', '"+location+"', '"+dtstart+"', '"+dtend+"');";
 			Statement statement = connection.createStatement();
@@ -334,8 +334,8 @@ public class CalendarFrame {
 				String dtendf = result.getString(5);
 				String location = result.getString(3);
 				String summary = result.getString(2);
+				//System.out.println(removeText(uid)+convertToNewFormat(dtstartf)+convertToNewFormat(dtendf)+removeText(location)+removeText(summary));
 				calendarItemList.add(new CalendarItem(removeText(uid), convertToNewFormat(dtstartf), convertToNewFormat(dtendf), removeText(location), removeText(summary)));
-				result.next();
 			}
 			
 		} catch (ClassNotFoundException e) {

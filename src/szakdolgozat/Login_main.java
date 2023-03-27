@@ -64,6 +64,9 @@ public class Login_main {
 					frmBejelentkezs.dispose();
 					CalendarFrame.main(null);
 				}
+				else {
+					JOptionPane.showMessageDialog(null, "Nincs ilyen felhasználó!\n"+"Kérem regisztráljon!");
+				}
 			}
 		});
 		frmBejelentkezs.getContentPane().setLayout(null);
@@ -92,6 +95,9 @@ public class Login_main {
 					 if(isExist(t_usrn.getText(),t_passwd.getText())) {
 						 frmBejelentkezs.dispose();
 						 CalendarFrame.main(null);
+					 }
+					 else {
+						 JOptionPane.showMessageDialog(null, "Nincs ilyen felhasználó!\n"+"Kérem regisztráljon!");
 					 }
 				 }
 				 }
@@ -136,20 +142,25 @@ public class Login_main {
 	private void registration(String name, String passwd) {
 		Connection connection;
 		try {
-			Class.forName("com.mysql.cj.jdbc.Driver");
-			connection = DriverManager.getConnection(
-	                "jdbc:mysql://localhost:3306/orarend",
-	                "root", "");
-			System.out.println("Database connected!");
-			if(isExist(name,passwd)==true) JOptionPane.showMessageDialog(null, "Ez a felhasználó már létezik!");
-			String quary1 = "INSERT INTO `login` (`name`, `passwd`) VALUES ('"+name+"', '"+passwd+"');";
-			String quary2 = "CREATE TABLE `orarend`.`"+name+"` (`uid` VARCHAR(40) NOT NULL , `summary` TINYTEXT NOT NULL , `location` TINYTEXT NOT NULL , `startdate` VARCHAR(17) NOT NULL , `enddate` VARCHAR(17) NOT NULL , PRIMARY KEY (`uid`));";
-			Statement state = connection.createStatement();
-			state.addBatch(quary1);
-			state.addBatch(quary2);
-			state.executeBatch();
-			state.close();
-			connection.close();
+			if(isExist(name,passwd)==true) {
+				JOptionPane.showMessageDialog(null, "Ez a felhasználó már létezik, most be lesz léptetve!");
+			}
+			else {
+				Class.forName("com.mysql.cj.jdbc.Driver");
+				connection = DriverManager.getConnection(
+		                "jdbc:mysql://localhost:3306/orarend",
+		                "root", "");
+				System.out.println("Database connected!");
+				
+				String quary1 = "INSERT INTO `login` (`name`, `passwd`) VALUES ('"+name+"', '"+passwd+"');";
+				String quary2 = "CREATE TABLE `orarend`.`"+name+"` (`uid` VARCHAR(40) NOT NULL , `summary` TINYTEXT NOT NULL , `location` TINYTEXT NOT NULL , `startdate` VARCHAR(25) NOT NULL , `enddate` VARCHAR(25) NOT NULL , PRIMARY KEY (`uid`));";
+				Statement state = connection.createStatement();
+				state.addBatch(quary1);
+				state.addBatch(quary2);
+				state.executeBatch();
+				state.close();
+				connection.close();	
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {

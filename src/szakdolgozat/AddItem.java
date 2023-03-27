@@ -7,6 +7,9 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Random;
@@ -150,6 +153,17 @@ public class AddItem extends CalendarFrame {
 					calendarItemList.add(returned);
 					Date createdDate = createDate(returned.getdtStart().getYear(),returned.getdtStart().getMonthValue()-1,returned.getdtStart().getDayOfMonth());
 					evaluator.add(createdDate);
+					try {
+						Class.forName("com.mysql.cj.jdbc.Driver");
+						Connection connect = DriverManager.getConnection(
+				                "jdbc:mysql://localhost:3306/orarend",
+				                "root", "");
+						
+						CalendarFrame.insertIntoSql(connect, Login_main.getUsrn().toLowerCase(), getRandomUid(), summary, location, dateDtstart.getDate().toString(), dateDtend.getDate().toString());
+					}
+					catch (SQLException | ClassNotFoundException d) {
+						d.printStackTrace();
+					}
 					mini.removeTrayIcon();
 					display();
 				}
