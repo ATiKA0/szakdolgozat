@@ -65,6 +65,10 @@ public class ImportFileFromLink {
 		frame.setVisible(true);
 	}
 	
+	/**
+	 * 
+	 * @param Input link to download
+	 */
 	private void DownloadFile(String link) {
 		try {
             // Create a URL object from the provided file URL

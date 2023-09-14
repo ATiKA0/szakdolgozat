@@ -3,12 +3,11 @@ package szakdolgozat;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -20,8 +19,14 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
+import org.apache.commons.lang3.time.DateUtils;
+
 import com.toedter.calendar.JDateChooser;
 
+/**
+ * Add a new calendar entry
+ * @author gluck
+ */
 public class AddItem extends CalendarFrame {
 
 	/**
@@ -29,7 +34,7 @@ public class AddItem extends CalendarFrame {
 	 */
 	
 	/*
-	 * In this window we can add a new lesson or an appointment to the calendar.
+	 * In this window we can add a new entry to the calendar.
 	 */
 	public void initialize() {
 		System.setProperty("file.encoding","UTF-8");
@@ -114,7 +119,8 @@ public class AddItem extends CalendarFrame {
 		frame.getContentPane().add(lblDtend, gbc_lblDtend);
 		
 		JDateChooser dateDtend = new JDateChooser();
-		dateDtend.setDate(new Date());
+		Date date = DateUtils.addMinutes(new Date(), 1);
+		dateDtend.setDate(date);
 		dateDtend.setDateFormatString("yyyy.MM.dd. HH:mm");
 		GridBagConstraints gbc_dateDtend = new GridBagConstraints();
 		gbc_dateDtend.fill = GridBagConstraints.BOTH;
@@ -124,8 +130,8 @@ public class AddItem extends CalendarFrame {
 		frame.getContentPane().add(dateDtend, gbc_dateDtend);
 		
 		JButton btnSend = new JButton("Hozzáadás");
-		btnSend.addMouseListener(new MouseAdapter() {	//This is the listener for the add new lesson button.
-			public void mousePressed(MouseEvent e) {
+		btnSend.addActionListener(new ActionListener() {	//This is the listener for the add new lesson button.
+			public void actionPerformed(ActionEvent e) {
 				// Gets the summary and the location of the lesson.
 				String summary = textSummary.getText();
 				String location = textLocation.getText();
@@ -154,15 +160,11 @@ public class AddItem extends CalendarFrame {
 					Date createdDate = createDate(returned.getdtStart().getYear(),returned.getdtStart().getMonthValue()-1,returned.getdtStart().getDayOfMonth());
 					evaluator.add(createdDate);
 					try {
-						Class.forName("com.mysql.cj.jdbc.Driver");
-						Connection connect = DriverManager.getConnection(
-				                "jdbc:mysql://localhost:3306/orarend",
-				                "root", "");
-						
-						//Func.insertIntoSql(connect, Login_main.getUsrn().toLowerCase(), getRandomUid(), summary, location, dateDtstart.getDate().toString(), dateDtend.getDate().toString());
-					}
-					catch (SQLException | ClassNotFoundException d) {
-						d.printStackTrace();
+						Connection connect = Func.connectToSql();
+						Func.insertIntoSql(connect, Login_main.getUsrn().toLowerCase(), getRandomUid(), summary, location, dtstart, dtend);
+						connect.close();
+					} catch (SQLException e1) {
+						e1.printStackTrace();
 					}
 					mini.removeTrayIcon();
 					display();
@@ -179,8 +181,8 @@ public class AddItem extends CalendarFrame {
 		mini.trayIcon(frame);
 		mini.notificationCalendar();
 	}
-	/*
-	 *	This function generates a random UID for a lesson and returns as a string.
+	/**
+	 *	This function generates a random UID for an event and returns as a string.
 	 */
 	private String getRandomUid() {
         String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890";

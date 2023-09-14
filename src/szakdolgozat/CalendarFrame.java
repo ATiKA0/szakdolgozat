@@ -23,6 +23,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.FileReader;
 import java.nio.charset.Charset;
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -126,7 +127,7 @@ public class CalendarFrame {
      * @return 
      * @wbp.parser.entryPoint
      */
-    /*
+    /**
      * This is the method which runs first and set everything up when this frame is opened
      */
     void firstRun() {
@@ -136,7 +137,7 @@ public class CalendarFrame {
     	createEvaluator();
     	display();
     }
-    /*
+    /**
      * This is the "main" method.
      * Creating the window view.
      */
@@ -198,7 +199,7 @@ public class CalendarFrame {
 		mini.notificationCalendar();	//Start the notification backend process
     }    
 
-    /*
+    /**
      *	Here we creates the Highlight Evaluator. 
      */
     public void createEvaluator(){
@@ -213,8 +214,8 @@ public class CalendarFrame {
     		evaluator.add(createDate(y, m, d));
     	}
     }
-    /*
-     * Here is the calendar importing method. This is the first thing in this view.
+    /**
+     * Here is the calendar importing method.
      * This method imports the ics file and parse it to CalendarItem
      */
     public void importCalendar(){
@@ -250,33 +251,28 @@ public class CalendarFrame {
     	}
     }
     
+    /**
+     * Get items from SQL database and store it locally
+     */
     public void getFromSql() {
     	String loggedUser = Login_main.getUsrn().toLowerCase();
-    	Connection connection;
+    	Connection connection = Func.connectToSql();
     	try {
-			Class.forName("com.mysql.cj.jdbc.Driver");
-			connection = DriverManager.getConnection(
-	                "jdbc:mysql://localhost:3306/orarend",
-	                "root", "");
-			System.out.println("Database connected!");
-			String quary= "SELECT * FROM "+loggedUser+"";
-			Statement statement = connection.createStatement();
-			ResultSet result = statement.executeQuery(quary);
+    		String procedureCall = "{call getFromSql(?)}";
+    		CallableStatement callableStatement = connection.prepareCall(procedureCall);
+    		callableStatement.setString(1, loggedUser);
+    		callableStatement.execute();
+    		ResultSet result = callableStatement.getResultSet();
 			while(result.next()) {
 				String uid = result.getString(1);
-				String dtstartf = result.getString(4);
-				String dtendf = result.getString(5);
+				java.sql.Date dtstartf = result.getDate(4);
+				java.sql.Date dtendf = result.getDate(5);
 				String location = result.getString(3);
 				String summary = result.getString(2);
-				//System.out.println(removeText(uid)+convertToNewFormat(dtstartf)+convertToNewFormat(dtendf)+removeText(location)+removeText(summary));
-				calendarItemList.add(new CalendarItem(Func.removeText(uid), Func.convertToNewFormat(dtstartf), Func.convertToNewFormat(dtendf), Func.removeText(location), Func.removeText(summary)));
+				calendarItemList.add(new CalendarItem(uid, Func.convertFromSqlDate(dtstartf), Func.convertFromSqlDate(dtendf), location, summary));
 			}
-			
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
+			connection.close();
 		} catch (SQLException e) {
-			e.printStackTrace();
-		} catch (ParseException e) {
 			e.printStackTrace();
 		}
     }

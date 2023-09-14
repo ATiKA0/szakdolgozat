@@ -24,7 +24,7 @@ public class Func {
 
     /**
      * This method parse the date/time format from the ics file to a LocalDateTime format
-     * @param dateStr Date string need to be formated
+     * @param dateStr : Date string need to be formated
      * @return Formated LocalDateTIme
      * @throws ParseException
      */
@@ -37,8 +37,9 @@ public class Func {
         return returnedDate;
     }
     
-    /*
-     * 	This method convert java.util.Date element to java.time.LocalDateTime
+    /**
+     * 	This method converts a java.util.Date element to java.time.LocalDateTime
+     * @param dateToConvert : java.util.Date to convert
      */
     public static LocalDateTime convertToLocalDateTime(Date dateToConvert) {
         return Instant.ofEpochMilli(dateToConvert.getTime())
@@ -46,7 +47,16 @@ public class Func {
           .toLocalDateTime();
     }
     
-    /*
+    /**
+     * This method converts a java.sql.Date element to java.time.LocalDateTime
+     * @param dateToConvert : java.sql.Date to convert
+     */
+    public static LocalDateTime convertFromSqlDate(java.sql.Date dateToConvert) {
+    	Instant instant = Instant.ofEpochMilli(dateToConvert.getTime());
+    	return LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
+    }
+    
+    /**
      * 	This method convert java.time.LocalDateTime element to java.util.Date
      */
     public static Date convertToDate(LocalDateTime dateToConvert) {
@@ -55,9 +65,10 @@ public class Func {
           .toInstant());
     }
     
-    /*
+    /**
      *	This method set the printing format of the LocalDateTime.
-     *	With the true/false at the end we can set the format is printed with the time or without. 
+     *	@param input : Element to format
+     *	@param withTime : With the true/false  we can set the format is printed with the time or without.
      */
     public static String printFormatDate(LocalDateTime input, boolean withTime) {
     	DateTimeFormatter formatterD = DateTimeFormatter.ofPattern("EEEE, yyyy.MMMdd");
@@ -84,8 +95,11 @@ public class Func {
 		return cnvf.toString();
     }
     
-    /*
+    /**
      * This create date method is needed for the evaluator
+     * @param y : Year
+     * @param m : Month
+     * @param d : Day
      */
     public static Date createDate(int y, int m, int d) {
         Calendar c = Calendar.getInstance();
@@ -99,6 +113,11 @@ public class Func {
         return (c.getTime());
     }
     
+    /**
+     * Insert calendar element into the SQL database.
+     * @param connection : Sql connection
+     * @param user : Logged user
+     */
     public static void insertIntoSql(Connection connection,String user,  String uid, String summary, String location, LocalDateTime dtstart, LocalDateTime dtend) {
     	try {
     		String procedureCall = "{call insertIntoSql(?, ?, ?, ?, ?, ?)}";
@@ -116,6 +135,10 @@ public class Func {
 		}
     }
     
+    /**
+     * Create an SQL connection to the database
+     * @return SQL connection
+     */
     public static Connection connectToSql() {
     	Connection connection;
     	try {
@@ -135,7 +158,7 @@ public class Func {
     }
     
     /**
-     * The getNewestFile method returns the newest ics file from the user's desktop direcctory
+     * The getNewestFile method returns the newest ics file from the working directory
      * Ics is the calendar file what we can export from the Neptun
      */
     	public static File getNewestFile() {
