@@ -132,8 +132,6 @@ public class CalendarFrame {
     void firstRun() {
     	Locale.setDefault(new Locale("hu", "HU"));	//Set the default locale for the dates.
     	System.setProperty("file.encoding","UTF-8");	//Set the file encoding to UTF-8
-    	System.out.println(Charset.defaultCharset());
-    	importCalendar();
     	getFromSql();
     	createEvaluator();
     	display();
@@ -160,17 +158,19 @@ public class CalendarFrame {
         	@Override
         	public void mousePressed(MouseEvent e) {
         		calendarItemList.clear();
-        		Frame_main.main(null);
+        		ImportFileFromLink imp = new ImportFileFromLink();
+        		imp.run();
+        		//Frame_main.main(null);
         		f.dispose();
         	}
         });
         jc.getDayChooser().add(btnNeptun, BorderLayout.SOUTH);
         jc.getDayChooser().addDateEvaluator(evaluator);	//Add the evaluator for the coloring
-        jc.setDate(convertToDate(chosenDate));
+        jc.setDate(Func.convertToDate(chosenDate));
         jc.getDayChooser().addPropertyChangeListener("day", new PropertyChangeListener() {	//Listener for the date choosing with mouse click
         	@Override
             public void propertyChange(PropertyChangeEvent e) {
-                chosenDate = convertToLocalDateTime(jc.getDate());	//This gets the clicked date in localdate format
+                chosenDate = Func.convertToLocalDateTime(jc.getDate());	//This gets the clicked date in localdate format
                 WeekOrDay weekorday = new WeekOrDay();
                 weekorday.WeekOrDayinit();	//Start the asking window. It's ask what the user want, a week view or a day view
                 f.dispose();	//Destroy the month window
@@ -197,58 +197,7 @@ public class CalendarFrame {
 		mini.trayIcon(f);	//In the end of the window building the method add a tray icon to the system tray
 		mini.notificationCalendar();	//Start the notification backend process
     }    
-    /*
-     *	This method parse the date/time format from the ics file to a LocalDateTime format
-     */
-    private static LocalDateTime convertToNewFormat(String dateStr) throws ParseException {
-    	TimeZone utc = TimeZone.getTimeZone("UTC");
-        SimpleDateFormat sourceFormat = new SimpleDateFormat("yyyyMMdd'T'HHmmss'Z'");
-        sourceFormat.setTimeZone(utc);
-        Date parsedDate = sourceFormat.parse(dateStr);
-        LocalDateTime returnedDate= convertToLocalDateTime(parsedDate);
-        return returnedDate;
-    }
-    /*
-     * 	This method convert java.util.Date element to java.time.LocalDateTime
-     */
-    public static LocalDateTime convertToLocalDateTime(Date dateToConvert) {
-        return Instant.ofEpochMilli(dateToConvert.getTime())
-          .atZone(ZoneId.systemDefault())
-          .toLocalDateTime();
-    }
-    /*
-     * 	This method convert java.time.LocalDateTime element to java.util.Date
-     */
-    public static Date convertToDate(LocalDateTime dateToConvert) {
-        return java.util.Date
-          .from(dateToConvert.atZone(ZoneId.systemDefault())
-          .toInstant());
-    }
-    /*
-     *	This method set the printing format of the LocalDateTime.
-     *	With the true/false at the end we can set the format is printed with the time or without. 
-     */
-    public static String printFormatDate(LocalDateTime input, boolean withTime) {
-    	DateTimeFormatter formatterD = DateTimeFormatter.ofPattern("EEEE, yyyy.MMMdd");
-    	DateTimeFormatter formatterT = DateTimeFormatter.ofPattern("EEEE, yyyy.MMMdd HH:mm");
-    	String output = null;
-    	if(withTime) {
-    		output = input.format(formatterT);
-    	}
-    	else {
-    		output = input.format(formatterD);
-    	}
-    	return output;
-    }
-    /*
-     *	The removeText method removes the unnecessary text from the date in the ics file 
-     */
-    public static String removeText(String cnv) {
-    	StringBuffer cnvf = new StringBuffer(cnv);
-    	cnvf.delete(0,cnvf.indexOf(":")+1);
-    	cnvf.deleteCharAt(cnvf.length()-1);
-		return cnvf.toString();
-    }
+
     /*
      *	Here we creates the Highlight Evaluator. 
      */
@@ -269,16 +218,13 @@ public class CalendarFrame {
      * This method imports the ics file and parse it to CalendarItem
      */
     public void importCalendar(){
-    	final String ics = Frame_main.getNewestFile().toString();
+    	final String ics = Func.getNewestFile().toString();
+    	System.out.println(ics);
     	System.setProperty("ical4j.unfolding.relaxed", "true");
     	System.setProperty("ical4j.parsing.relaxed", "true");
-    	Connection connection;
+    	Connection connection = Func.connectToSql();
     	String loggedUser= Login_main.getUsrn().toLowerCase();
     	try {
-    		  Class.forName("com.mysql.cj.jdbc.Driver");
-			  connection = DriverManager.getConnection(
-	                "jdbc:mysql://localhost:3306/orarend",
-	                "root", "");
 			  System.out.println("Database connected!");
 		      CalendarBuilder builder = new CalendarBuilder();
 		      final UnfoldingReader ufrdr =new UnfoldingReader(new FileReader(ics),true);
@@ -290,30 +236,18 @@ public class CalendarFrame {
 		    	String location = ize.getProperties(Property.LOCATION).toString();
 		    	String summary = ize.getProperties(Property.SUMMARY).toString();
 		    	String uid = ize.getProperties(Property.UID).toString();
-		    	String dtstartf = removeText(ize.getProperties(Property.DTSTART).toString());
-		    	String dtendf = removeText(ize.getProperties(Property.DTEND).toString());
-		    	insertIntoSql(connection, loggedUser, removeText(uid), summary, location, dtstartf, dtendf);
+		    	String dtstartf = Func.removeText(ize.getProperties(Property.DTSTART).toString());
+		    	String dtendf = Func.removeText(ize.getProperties(Property.DTEND).toString());
+		    	Func.insertIntoSql(connection, loggedUser, Func.removeText(uid), Func.removeText(summary), Func.removeText(location), Func.convertToNewFormat(dtstartf), Func.convertToNewFormat(dtendf));
 		    	//At the end we create a CalendarItem and add it to the public list
 		  		//calendarItemList.add(new CalendarItem(removeText(uid), convertToNewFormat(dtstartf), convertToNewFormat(dtendf), removeText(location), removeText(summary)));
     	      }
 		      connection.close();
-		      Frame_main.getNewestFile().delete();
+		      Func.getNewestFile().delete();
     	} 
     	catch (Throwable t) {
     	      t.printStackTrace();
     	}
-    }
-    
-    public static void insertIntoSql(Connection connection,String user,  String uid, String summary, String location, String dtstart, String dtend) {
-    	try {
-			String quary1 = "INSERT IGNORE INTO "+user+" (`uid`, `summary`, `location`, `startdate`, `enddate`) VALUES ('"+uid+"', '"+summary+"', '"+location+"', '"+dtstart+"', '"+dtend+"');";
-			Statement statement = connection.createStatement();
-			statement.addBatch(quary1);
-			statement.executeBatch();
-			statement.close();
-    	} catch (SQLException e) {
-			e.printStackTrace();
-		}
     }
     
     public void getFromSql() {
@@ -335,7 +269,7 @@ public class CalendarFrame {
 				String location = result.getString(3);
 				String summary = result.getString(2);
 				//System.out.println(removeText(uid)+convertToNewFormat(dtstartf)+convertToNewFormat(dtendf)+removeText(location)+removeText(summary));
-				calendarItemList.add(new CalendarItem(removeText(uid), convertToNewFormat(dtstartf), convertToNewFormat(dtendf), removeText(location), removeText(summary)));
+				calendarItemList.add(new CalendarItem(Func.removeText(uid), Func.convertToNewFormat(dtstartf), Func.convertToNewFormat(dtendf), Func.removeText(location), Func.removeText(summary)));
 			}
 			
 		} catch (ClassNotFoundException e) {
@@ -364,81 +298,6 @@ public class CalendarFrame {
     
     public LocalDateTime getchosenDate() {
     	return chosenDate;
-    }
-    /*
-     *	Here starts the class for the tray icon 
-     */
-    class Tray{
-    	static TrayIcon pubI;	//The tray icon
-    	static SystemTray pubT;	//The system tray
-    	/*
-    	 * This is the method for activating the tray icon
-    	 */
-    	 public void trayIcon(JFrame f) {
-    		 	if (!SystemTray.isSupported()) {	//Check the system tray for trayicon support
-    		 		System.out.println("SystemTray is not supported");
-    	            return;
-    	        }
-    		 	final PopupMenu popup = new PopupMenu();
-    		 	final SystemTray tray = SystemTray.getSystemTray();
-    		 	Image icon = Toolkit.getDefaultToolkit().createImage(".//src//szakdolgozat//calendar.png");
-    		 	TrayIcon trayIcon = new TrayIcon(icon, "Órarend");
-    		 	pubI = trayIcon;
-    		 	pubT=tray;
-    		 	trayIcon.setImageAutoSize(true);
-         		trayIcon.setToolTip("Órarend");
-         		
-         		trayIcon.addActionListener(new ActionListener() {
-         			public void actionPerformed(ActionEvent evt) {
-         				f.setVisible(true);
-         	            f.setState(Frame.NORMAL);
-         			};
-         		});
-         		
-         		MenuItem open = new MenuItem("Megnyitás");
-         		open.addActionListener(new ActionListener() {
-         	        public void actionPerformed(ActionEvent e) {
-         	            f.setVisible(true);
-         	            f.setState(Frame.NORMAL);
-         	        }
-         	    });
-         		MenuItem close = new MenuItem("Bezárás");
-         		close.addActionListener(new ActionListener() {
-         	        public void actionPerformed(ActionEvent e) {
-         	            System.exit(0);
-         	        }
-         	    });
-         		popup.add(open);
-         		popup.add(close);
-         		trayIcon.setPopupMenu(popup);
-         		
-         		try {
-                    tray.add(trayIcon);
-                } catch (AWTException e) {
-                    System.out.println("TrayIcon could not be added.");
-                }
-
-    	 }
-
-    	public void notificationCalendar() {
-	    	Iterator<CalendarItem> iter = calendarItemList.iterator();
-	    	LocalDateTime date = LocalDateTime.now();
-			Timer time = new Timer();
-			while (iter.hasNext()) {
-				CalendarItem ize = iter.next();
-				LocalDateTime dtstart = ize.getdtStart();
-				TimerTask task = new TimerTask(){
-					@Override
-					public void run() {
-					pubI.displayMessage("Esemény kezdete", "Leírás: "+ize.getsummary()+System.lineSeparator()+"Helyszín: "+ize.getlocation()+System.lineSeparator()+"Kezdés ideje: "+printFormatDate(dtstart, true)+System.lineSeparator()+"Vége: "+printFormatDate(ize.getdtEnd(),true), MessageType.INFO);
-					}
-				};
-				if(dtstart.compareTo(date) > 0)time.schedule(task, convertToDate(dtstart));
-			}
-    	}
-    	public void removeTrayIcon() {
-    		pubT.remove(pubI);
-    	}
     }
 
     public static void main(String[] args) {

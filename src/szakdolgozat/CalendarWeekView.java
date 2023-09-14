@@ -42,7 +42,7 @@ public class CalendarWeekView extends CalendarFrame{
         lastDayOfWeek = dateToOpen.with(LocalTime.MAX).with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
  
         //Prepare frame
-        frmMain = new JFrame (printFormatDate(firstDayOfWeek, false)+" - "+printFormatDate(lastDayOfWeek, false)); //Create frame
+        frmMain = new JFrame (Func.printFormatDate(firstDayOfWeek, false)+" - "+Func.printFormatDate(lastDayOfWeek, false)); //Create frame
         frmMain.addWindowListener(new WindowAdapter() {
         	@Override
         	public void windowClosing(WindowEvent e) {

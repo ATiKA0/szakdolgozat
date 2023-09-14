@@ -24,7 +24,7 @@ public class CalendarDayView extends CalendarFrame {
 				display();	//Return to the main window
 			}
 		});
-		frm.setTitle(printFormatDate(getchosenDate(),false));//In the head title print the chosen date
+		frm.setTitle(Func.printFormatDate(getchosenDate(),false));//In the head title print the chosen date
 		frm.setBounds(100, 100, 700, 680);
 		frm.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);	//When 'X' pressed just hide and not stop the application
 		String[] columnNames = {"Esemény leírása", "Helyszín", "Kezdés ideje", "Befejezés ideje"};	//Head of the table view
@@ -56,8 +56,8 @@ public class CalendarDayView extends CalendarFrame {
 		    array[i] = new Object[4];
 		    array[i][0] = c.getsummary();
 		    array[i][1] = c.getlocation();
-		    array[i][2] = printFormatDate(c.getdtStart(),true);
-		    array[i][3] = printFormatDate(c.getdtEnd(),true);
+		    array[i][2] = Func.printFormatDate(c.getdtStart(),true);
+		    array[i][3] = Func.printFormatDate(c.getdtEnd(),true);
 		    i++;
 		}
 		return array;

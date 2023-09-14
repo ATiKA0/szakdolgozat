@@ -52,7 +52,7 @@ public class WeekOrDay extends CalendarFrame{
 		lblText.setBounds(109, 27, 113, 13);
 		frame.getContentPane().add(lblText);
 		
-		JLabel lblDate = new JLabel(printFormatDate(getchosenDate(), false));
+		JLabel lblDate = new JLabel(Func.printFormatDate(getchosenDate(), false));
 		lblDate.setBounds(232, 27, 184, 13);
 		frame.getContentPane().add(lblDate);
 		frame.setVisible(true);

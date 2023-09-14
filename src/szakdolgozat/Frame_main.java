@@ -34,7 +34,9 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.remote.CapabilityType;
+import org.openqa.selenium.remote.service.DriverService;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -58,6 +60,7 @@ public class Frame_main {
 
 	private WebDriver login(String usr, String passwd){
 		WebDriverManager.chromedriver().setup();
+		System.setProperty("webdriver.chrome.driver", "C:\\Users\\gluck\\Desktop\\Szakdolgozat\\szakdolgozat\\resources\\chromedriver.exe");
 		HashMap<String, Object> chromePrefs = new HashMap<String, Object>();	//Create a hashmap for the chrome preferences
 		chromePrefs.put("profile.default_content_settings.popups", 0);	//In the default profile disable popups
 		chromePrefs.put("download.default_directory", System.getProperty("user.dir"));
@@ -69,7 +72,7 @@ public class Frame_main {
 		options.addArguments("--headless");	//Run chrome in headless because we don't need to see it
 		options.setAcceptInsecureCerts(true);	//If the site don't have an SSL certification accept the insecure site
 		options.setUnhandledPromptBehaviour(UnexpectedAlertBehaviour.ACCEPT);	//If an chrome popup appears the chromedriver accept it 
-		WebDriver driver = new ChromeDriver(options);	//Here creating the chromedriver with the given options
+		WebDriver driver = new ChromeDriver();	//Here creating the chromedriver with the given options
 		WebDriverWait wait = new WebDriverWait(driver, 5);	//Here creating a wait element for the webdriver
 		driver.get("https://neptun-web"+combo+".tr.pte.hu/hallgato/login.aspx");	//Open the neptun site with a choosable neptun server 
 		WebElement login = driver.findElement(By.name("btnSubmit"));	//Searching on the site for the "Bejelentkezés" button
@@ -128,22 +131,6 @@ public class Frame_main {
 		
 	}
 	
-/*
- * The getNewestFile method returns the newest ics file from the user's desktop direcctory
- * Ics is the calendar file what we can export from the Neptun
- */
-	public static File getNewestFile() {
-	    File theNewestFile = null;
-	    File dir = new File(System.getProperty("user.dir"));
-	    FileFilter fileFilter = new WildcardFileFilter("*." + "ics");
-	    File[] files = dir.listFiles(fileFilter);
-
-	    if (files.length > 0) {
-	        Arrays.sort(files, LastModifiedFileComparator.LASTMODIFIED_REVERSE);
-	        theNewestFile = files[0];
-	    }
-	    return theNewestFile;
-	}
 /*
  * This export method is exporting the ics file from Neptun
  * In here the program run the login method, then clicks in the export calendar button

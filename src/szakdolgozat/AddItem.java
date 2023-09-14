@@ -132,8 +132,8 @@ public class AddItem extends CalendarFrame {
 				LocalDateTime dtstart = null; 
 				LocalDateTime dtend = null;
 				try {	//This try-catch block is checks if the date format is correct by try to convert to LocalDate format.
-				dtstart = convertToLocalDateTime(dateDtstart.getDate());
-				dtend = convertToLocalDateTime(dateDtend.getDate());
+				dtstart = Func.convertToLocalDateTime(dateDtstart.getDate());
+				dtend = Func.convertToLocalDateTime(dateDtend.getDate());
 				}
 				catch(Exception f){
 					JOptionPane.showMessageDialog(null, "Hibás dátum!");
@@ -159,7 +159,7 @@ public class AddItem extends CalendarFrame {
 				                "jdbc:mysql://localhost:3306/orarend",
 				                "root", "");
 						
-						CalendarFrame.insertIntoSql(connect, Login_main.getUsrn().toLowerCase(), getRandomUid(), summary, location, dateDtstart.getDate().toString(), dateDtend.getDate().toString());
+						//Func.insertIntoSql(connect, Login_main.getUsrn().toLowerCase(), getRandomUid(), summary, location, dateDtstart.getDate().toString(), dateDtend.getDate().toString());
 					}
 					catch (SQLException | ClassNotFoundException d) {
 						d.printStackTrace();
