@@ -6,6 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -18,6 +19,11 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
+
+import org.bouncycastle.crypto.generators.BCrypt;
+
+import de.mkammerer.argon2.Argon2;
+import de.mkammerer.argon2.Argon2Factory;
 
 public class Login_main {
 
@@ -118,52 +124,47 @@ public class Login_main {
 		frmBejelentkezs.getContentPane().add(b_registration);
 	}
 	
-	private Boolean isExist(String name, String passwd) {
-		Connection connection;
-		Boolean exist;
+	public Boolean isExist(String name, String passwd) {
+		
+		Boolean exist = false;
+		Argon2 argon2 = Argon2Factory.create();
 		try {
-			Class.forName("com.mysql.cj.jdbc.Driver");
-			connection = DriverManager.getConnection(
-	                "jdbc:mysql://localhost:3306/orarend",
-	                "root", "");
-			System.out.println("Database connected!");
+			Connection connection = Func.connectToSql();
 			Statement statement = connection.createStatement();
-			ResultSet result = statement.executeQuery("SELECT id FROM login WHERE name = '"+name+"' && passwd = '"+passwd+"';");
+			ResultSet result = statement.executeQuery("SELECT * FROM login WHERE name = '"+name+"' LIMIT 1;");
 			result.next();
-			exist = (result.getRow() == 1) ? true :false;
+			if(result.getRow() == 1) {
+				String pass = result.getString(3);
+				exist = argon2.verify(pass, passwd);
+			}
 			statement.close();
 			connection.close();
-		} catch (SQLException | ClassNotFoundException e) {
+		} catch (SQLException e) {
 			throw new IllegalStateException("Cannot connect the database!", e);
 		}
 		return exist;
 	}
 	
 	private void registration(String name, String passwd) {
-		Connection connection;
+		
 		try {
 			if(isExist(name,passwd)==true) {
 				JOptionPane.showMessageDialog(null, "Ez a felhasználó már létezik, most be lesz léptetve!");
 			}
 			else {
-				Class.forName("com.mysql.cj.jdbc.Driver");
-				connection = DriverManager.getConnection(
-		                "jdbc:mysql://localhost:3306/orarend",
-		                "root", "");
-				System.out.println("Database connected!");
-				
-				String quary1 = "INSERT INTO `login` (`name`, `passwd`) VALUES ('"+name+"', '"+passwd+"');";
-				String quary2 = "CREATE TABLE `orarend`.`"+name+"` (`uid` VARCHAR(40) NOT NULL , `summary` TINYTEXT NOT NULL , `location` TINYTEXT NOT NULL , `startdate` VARCHAR(25) NOT NULL , `enddate` VARCHAR(25) NOT NULL , PRIMARY KEY (`uid`));";
-				Statement state = connection.createStatement();
-				state.addBatch(quary1);
-				state.addBatch(quary2);
-				state.executeBatch();
-				state.close();
+				String email = "";
+				Argon2 argon2 = Argon2Factory.create();
+				String hashedPassword = argon2.hash(10, 65536, 1, passwd);
+				Connection connection = Func.connectToSql();
+				String procedureCall = "{call InsertUserWithTable(?, ?, ?)}";
+	    		CallableStatement callableStatement = connection.prepareCall(procedureCall);
+	    		callableStatement.setString(1, name);
+	    		callableStatement.setString(2, email);
+	    		callableStatement.setString(3, hashedPassword);
+	    		callableStatement.execute();
 				connection.close();	
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
 	}
