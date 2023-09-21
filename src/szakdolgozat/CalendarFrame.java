@@ -32,6 +32,7 @@ import java.sql.Statement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -50,6 +51,7 @@ import javax.swing.JFrame;
 
 import com.toedter.calendar.IDateEvaluator;
 import com.toedter.calendar.JCalendar;
+import com.toedter.calendar.JDayChooser;
 
 import net.fortuna.ical4j.data.CalendarBuilder;
 import net.fortuna.ical4j.data.UnfoldingReader;
@@ -124,11 +126,8 @@ public class CalendarFrame {
     }
 
     /**
-     * @return 
-     * @wbp.parser.entryPoint
-     */
-    /**
      * This is the method which runs first and set everything up when this frame is opened
+     * @wbp.parser.entryPoint
      */
     void firstRun() {
     	Locale.setDefault(new Locale("hu", "HU"));	//Set the default locale for the dates.
@@ -154,7 +153,8 @@ public class CalendarFrame {
         f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
         JCalendar jc = new JCalendar();	//Creating the JCalendar element
-        jc.getDayChooser().setDayBordersVisible(true);
+        JDayChooser dayChooser = jc.getDayChooser();
+        dayChooser.setDayBordersVisible(true);
         btnNeptun.addMouseListener(new MouseAdapter() {
         	@Override
         	public void mousePressed(MouseEvent e) {
@@ -165,17 +165,23 @@ public class CalendarFrame {
         		f.dispose();
         	}
         });
-        jc.getDayChooser().add(btnNeptun, BorderLayout.SOUTH);
-        jc.getDayChooser().addDateEvaluator(evaluator);	//Add the evaluator for the coloring
+        dayChooser.add(btnNeptun, BorderLayout.SOUTH);
+        dayChooser.addDateEvaluator(evaluator);	//Add the evaluator for the coloring
         jc.setDate(Func.convertToDate(chosenDate));
-        jc.getDayChooser().addPropertyChangeListener("day", new PropertyChangeListener() {	//Listener for the date choosing with mouse click
+        dayChooser.setAlwaysFireDayProperty(true);
+        dayChooser.addPropertyChangeListener("day", new PropertyChangeListener() {	//Listener for the date choosing with mouse click
+        	int c = 0;
         	@Override
             public void propertyChange(PropertyChangeEvent e) {
-                chosenDate = Func.convertToLocalDateTime(jc.getDate());	//This gets the clicked date in localdate format
-                WeekOrDay weekorday = new WeekOrDay();
-                weekorday.WeekOrDayinit();	//Start the asking window. It's ask what the user want, a week view or a day view
-                f.dispose();	//Destroy the month window
-                mini.removeTrayIcon();	//Remove the tray icon for this window
+        		if(c == 0) {	// This is needed to select the current date
+        			c++;
+        		}else {
+        			chosenDate = Func.convertToLocalDateTime(jc.getDate());	//This gets the clicked date in localdate format
+        			WeekOrDay weekorday = new WeekOrDay();
+                    weekorday.WeekOrDayinit();	//Start the asking window. It's ask what the user want, a week view or a day view
+                    f.dispose();	//Destroy the month window
+                    mini.removeTrayIcon();	//Remove the tray icon for this window
+        		}
                 }
         });
         f.getContentPane().setLayout(new BorderLayout(0, 0));

@@ -4,8 +4,19 @@ import java.awt.GridLayout;
 import java.util.ArrayList;
 
 import javax.swing.JFrame;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
+import javax.swing.SwingUtilities;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumnModel;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
@@ -27,12 +38,39 @@ public class CalendarDayView extends CalendarFrame {
 		frm.setTitle(Func.printFormatDate(getchosenDate(),false));//In the head title print the chosen date
 		frm.setBounds(100, 100, 700, 680);
 		frm.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);	//When 'X' pressed just hide and not stop the application
-		String[] columnNames = {"Esemény leírása", "Helyszín", "Kezdés ideje", "Befejezés ideje"};	//Head of the table view
+		String[] columnNames = {"SSID", "Esemény leírása", "Helyszín", "Kezdés ideje", "Befejezés ideje"};	//Head of the table view
 		Object[][] array = createTableViev();	//Generating the table view with another method and load the table object
 		frm.getContentPane().setLayout(new GridLayout(0, 1, 0, 0));	// Set frame layout
-		JTable table = new JTable(array, columnNames);	//Creating the table with the head and the objects
+		DefaultTableModel model = new DefaultTableModel(array, columnNames);	//Creating the table model with the head and the objects
+		JTable table = new JTable(model);	//Generate the table
 		table.setRowHeight(30);
 		table.setEnabled(false);
+		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);	//Set table selection to only one item
+		JPopupMenu popupMenu = new JPopupMenu();
+        JMenuItem deleteMenuItem = new JMenuItem("Esemény törlése");
+        deleteMenuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int selectedRow = table.getSelectedRow();
+                if (selectedRow != -1) {
+                	System.out.println(array[selectedRow][0]);
+                }
+            }
+        });
+	     
+	    popupMenu.add(deleteMenuItem);
+	    table.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                if (SwingUtilities.isRightMouseButton(e)) {
+                    int row = table.rowAtPoint(e.getPoint());
+                    if (row >= 0) {
+                        table.setRowSelectionInterval(row, row);
+                        popupMenu.show(table, e.getX(), e.getY());
+                    }
+                }
+            }
+        });
 		JScrollPane sp = new JScrollPane(table);	//Insert table into a scroll pane
 		frm.getContentPane().add(sp);
 		frm.toFront();	//When open the window opens at foreground

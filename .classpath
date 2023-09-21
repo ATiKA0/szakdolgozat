@@ -134,5 +134,6 @@
 	<classpathentry kind="lib" path="miglayout15-swing.jar" sourcepath="miglayout-src.zip"/>
 	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/Szakdolgozat/szakdolgozat/lib/argon2-jvm-2.4.jar"/>
 	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/Szakdolgozat/szakdolgozat/lib/argon2-jvm-2.4-sources.jar"/>
+	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/Szakdolgozat/szakdolgozat/lib/jcalendar-1.4-sources.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
