@@ -6,6 +6,8 @@ import java.awt.event.MouseEvent;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 public class WeekOrDay extends CalendarFrame{
 	/**
@@ -20,6 +22,13 @@ public class WeekOrDay extends CalendarFrame{
 		System.setProperty("file.encoding","UTF-8");
 		JFrame frame;
 		frame = new JFrame();
+		frame.addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent e) {
+				frame.dispose();
+				display();
+			}
+		});
 		frame.setBounds(100, 100, 501, 193);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);

@@ -11,6 +11,7 @@ import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
 import java.awt.event.ActionEvent;
@@ -19,6 +20,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 public class CalendarDayView extends CalendarFrame {
 //This is a Day View window for the calendar using a list view.
@@ -32,6 +35,8 @@ public class CalendarDayView extends CalendarFrame {
 			@Override
 			public void windowClosing(WindowEvent e) {		
 				mini.removeTrayIcon();	//Removing the tray icon for this window
+				evaluator.remove();
+				createEvaluator();
 				display();	//Return to the main window
 			}
 		});
@@ -46,14 +51,29 @@ public class CalendarDayView extends CalendarFrame {
 		table.setRowHeight(30);
 		table.setEnabled(false);
 		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);	//Set table selection to only one item
-		JPopupMenu popupMenu = new JPopupMenu();
+		TableColumnModel columnModel = table.getColumnModel();	//Staff to hide the first column with SSID
+		TableColumn firstColumn = columnModel.getColumn(0);	
+        firstColumn.setMinWidth(0);
+        firstColumn.setMaxWidth(0);
+        firstColumn.setPreferredWidth(0);
+        firstColumn.setResizable(false);
+		JPopupMenu popupMenu = new JPopupMenu();	
         JMenuItem deleteMenuItem = new JMenuItem("Esemény törlése");
         deleteMenuItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 int selectedRow = table.getSelectedRow();
                 if (selectedRow != -1) {
-                	System.out.println(array[selectedRow][0]);
+                	String selectedUid = array[selectedRow][0].toString();
+                	try {
+                		Connection con = Func.connectToSql();
+                		Func.deleteFromSql(con, selectedUid, Login_main.getUsrn().toLowerCase());
+						con.close();
+						removeItemFromList(selectedUid);
+						model.removeRow(selectedRow);
+					} catch (SQLException e1) {
+						e1.printStackTrace();
+					}
                 }
             }
         });
@@ -90,14 +110,26 @@ public class CalendarDayView extends CalendarFrame {
 		Object[][] array = new Object[isEqual.size()][];	//Creating the array which is returned to the main table
 		for (CalendarItem c : isEqual)		//This for loop creates the objects from the array list
 		{
-			if(c.getdtStart().toLocalDate().equals(getchosenDate().toLocalDate()))
-		    array[i] = new Object[4];
-		    array[i][0] = c.getsummary();
-		    array[i][1] = c.getlocation();
-		    array[i][2] = Func.printFormatDate(c.getdtStart(),true);
-		    array[i][3] = Func.printFormatDate(c.getdtEnd(),true);
-		    i++;
+			if(c.getdtStart().toLocalDate().equals(getchosenDate().toLocalDate())) {
+			    array[i] = new Object[5];
+				array[i][0] = c.getuid();
+			    array[i][1] = c.getsummary();
+			    array[i][2] = c.getlocation();
+			    array[i][3] = Func.printFormatDate(c.getdtStart(),true);
+			    array[i][4] = Func.printFormatDate(c.getdtEnd(),true);
+			    i++;
+			}
 		}
 		return array;
+	}
+
+	private void removeItemFromList(String uid) {
+		for (int i = 0; i < calendarItemList.size(); i++) {
+            CalendarItem obj = calendarItemList.get(i);
+            if (obj.getuid() == uid) {
+            	calendarItemList.remove(i); // Remove the object with the matching ID
+                break; // Exit the loop once the object is removed
+            }
+        }
 	}
 }

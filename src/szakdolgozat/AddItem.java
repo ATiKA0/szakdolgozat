@@ -161,7 +161,7 @@ public class AddItem extends CalendarFrame {
 					evaluator.add(createdDate);
 					try {
 						Connection connect = Func.connectToSql();
-						Func.insertIntoSql(connect, Login_main.getUsrn().toLowerCase(), getRandomUid(), summary, location, dtstart, dtend);
+						Func.insertIntoSql(connect, Login_main.getUsrn().toLowerCase(), returned.getuid(), summary, location, dtstart, dtend);
 						connect.close();
 					} catch (SQLException e1) {
 						e1.printStackTrace();

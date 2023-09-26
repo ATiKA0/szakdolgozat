@@ -135,6 +135,18 @@ public class Func {
 		}
     }
     
+    public static void deleteFromSql(Connection connection, String ssid, String user) {
+    	try {
+    		String procedureCall = "{call deleteFromSql(?, ?)}";
+    		CallableStatement callableStatement = connection.prepareCall(procedureCall);
+    		callableStatement.setString(1, ssid);
+    	    callableStatement.setString(2, user);
+    	    callableStatement.execute();
+    	} catch (SQLException e) {
+			e.printStackTrace();
+		}
+    }
+    
     /**
      * Create an SQL connection to the database
      * @return SQL connection
@@ -148,10 +160,8 @@ public class Func {
 					"root", "");
 			return connection;
 		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return null;

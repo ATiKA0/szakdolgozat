@@ -1,20 +1,9 @@
 package szakdolgozat;
 
-import java.awt.AWTException;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.EventQueue;
-import java.awt.Frame;
-import java.awt.Image;
-import java.awt.MenuItem;
-import java.awt.PopupMenu;
-import java.awt.SystemTray;
-import java.awt.Toolkit;
-import java.awt.TrayIcon;
-import java.awt.TrayIcon.MessageType;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
@@ -22,29 +11,17 @@ import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.FileReader;
-import java.nio.charset.Charset;
 import java.sql.CallableStatement;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.Instant;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
-import java.util.TimeZone;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -79,6 +56,9 @@ public class CalendarFrame {
 
         public void add(Date date) {
             list.add(date);
+        }
+        public void remove() {
+        	list.clear();
         }
         public List<Date> getList() {
         	return list;
@@ -136,6 +116,7 @@ public class CalendarFrame {
     	createEvaluator();
     	display();
     }
+    
     /**
      * This is the "main" method.
      * Creating the window view.
@@ -218,6 +199,7 @@ public class CalendarFrame {
     		int m = calendarItemList.getMonthValue()-1;
     		int d = calendarItemList.getDayOfMonth();
     		evaluator.add(createDate(y, m, d));
+    		
     	}
     }
     /**
