@@ -35,6 +35,7 @@ import net.fortuna.ical4j.data.UnfoldingReader;
 import net.fortuna.ical4j.model.Component;
 import net.fortuna.ical4j.model.Property;
 import net.fortuna.ical4j.model.component.CalendarComponent;
+import java.awt.Toolkit;
 
 public class CalendarFrame {
 /*
@@ -123,6 +124,7 @@ public class CalendarFrame {
      */
      void display() {
         JFrame f = new JFrame("Naptár");
+        f.setIconImage(Toolkit.getDefaultToolkit().getImage(CalendarFrame.class.getResource("/szakdolgozat/calendar.png")));
         f.addWindowListener(new WindowAdapter() {	//This window listener is for iconify to the system tray. 
         	@Override
         	public void windowIconified(WindowEvent e) {
@@ -253,11 +255,12 @@ public class CalendarFrame {
     		ResultSet result = callableStatement.getResultSet();
 			while(result.next()) {
 				String uid = result.getString(1);
-				java.sql.Date dtstartf = result.getDate(4);
-				java.sql.Date dtendf = result.getDate(5);
+				LocalDateTime dtstartf = result.getTimestamp(4).toLocalDateTime();
+				LocalDateTime dtendf = result.getTimestamp(5).toLocalDateTime();
 				String location = result.getString(3);
 				String summary = result.getString(2);
-				calendarItemList.add(new CalendarItem(uid, Func.convertFromSqlDate(dtstartf), Func.convertFromSqlDate(dtendf), location, summary));
+				System.out.println(result.getDate(4));
+				calendarItemList.add(new CalendarItem(uid, dtstartf, dtendf, location, summary));
 			}
 			connection.close();
 		} catch (SQLException e) {

@@ -30,7 +30,7 @@ public class WeekOrDay extends CalendarFrame{
 			}
 		});
 		frame.setBounds(100, 100, 501, 193);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 		
 		JButton btnDayView = new JButton("Napi nézet");
@@ -49,8 +49,7 @@ public class WeekOrDay extends CalendarFrame{
 		btnWeekView.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				CalendarWeekView week = new CalendarWeekView();
-		    	week.start(getchosenDate());
+				WeekViewCalendar week = new WeekViewCalendar(getchosenDate());
 		    	frame.dispose();
 			}
 		});

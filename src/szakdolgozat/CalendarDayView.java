@@ -35,7 +35,7 @@ public class CalendarDayView extends CalendarFrame {
 			@Override
 			public void windowClosing(WindowEvent e) {		
 				mini.removeTrayIcon();	//Removing the tray icon for this window
-				evaluator.remove();
+				evaluator.remove();	//Reload the evaluator
 				createEvaluator();
 				display();	//Return to the main window
 			}
@@ -52,16 +52,17 @@ public class CalendarDayView extends CalendarFrame {
 		table.setEnabled(false);
 		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);	//Set table selection to only one item
 		TableColumnModel columnModel = table.getColumnModel();	//Staff to hide the first column with SSID
-		TableColumn firstColumn = columnModel.getColumn(0);	
+		TableColumn firstColumn = columnModel.getColumn(0);	//Get the first column contains SSID
         firstColumn.setMinWidth(0);
         firstColumn.setMaxWidth(0);
         firstColumn.setPreferredWidth(0);
         firstColumn.setResizable(false);
 		JPopupMenu popupMenu = new JPopupMenu();	
         JMenuItem deleteMenuItem = new JMenuItem("Esemény törlése");
+        JMenuItem modifyMenuItem = new JMenuItem("Esemény módosítása");
         deleteMenuItem.addActionListener(new ActionListener() {
             @Override
-            public void actionPerformed(ActionEvent e) {
+            public void actionPerformed(ActionEvent e) {	//Get the selected row and remove it from SQL and local
                 int selectedRow = table.getSelectedRow();
                 if (selectedRow != -1) {
                 	String selectedUid = array[selectedRow][0].toString();
@@ -79,7 +80,7 @@ public class CalendarDayView extends CalendarFrame {
         });
 	     
 	    popupMenu.add(deleteMenuItem);
-	    table.addMouseListener(new MouseAdapter() {
+	    table.addMouseListener(new MouseAdapter() {	//Show the popup menu on right click
             @Override
             public void mousePressed(MouseEvent e) {
                 if (SwingUtilities.isRightMouseButton(e)) {
@@ -101,6 +102,10 @@ public class CalendarDayView extends CalendarFrame {
 	}
 	
 	
+	/**
+	 * Get the item from the main event list and parse it to an object for the table
+	 * @return Object for the JTable
+	 */
 	private Object[][] createTableViev() {
 		ArrayList<CalendarItem> isEqual = new ArrayList<CalendarItem>();	//Creating a new array list for the chosen calendar items
 		int i = 0;
