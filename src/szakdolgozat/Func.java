@@ -135,12 +135,33 @@ public class Func {
 		}
     }
     
+    /**
+     * @param connection
+     * @param ssid
+     * @param user
+     */
     public static void deleteFromSql(Connection connection, String ssid, String user) {
     	try {
     		String procedureCall = "{call deleteFromSql(?, ?)}";
     		CallableStatement callableStatement = connection.prepareCall(procedureCall);
     		callableStatement.setString(1, ssid);
     	    callableStatement.setString(2, user);
+    	    callableStatement.execute();
+    	} catch (SQLException e) {
+			e.printStackTrace();
+		}
+    }
+    
+    public static void editEventSql(Connection connection, String ssid, String user, String newSummary, String newLocation, LocalDateTime newStartDate, LocalDateTime newEndDate) {
+    	try {
+    		String procedureCall = "{call alterEvent(?, ?, ?, ?, ?, ?)}";
+    		CallableStatement callableStatement = connection.prepareCall(procedureCall);
+    		callableStatement.setString(1, ssid);
+    	    callableStatement.setString(2, user);
+    	    callableStatement.setString(3, newSummary);
+    	    callableStatement.setString(4, newLocation);
+    	    callableStatement.setString(5, newStartDate.toString());
+    	    callableStatement.setString(6, newEndDate.toString());
     	    callableStatement.execute();
     	} catch (SQLException e) {
 			e.printStackTrace();

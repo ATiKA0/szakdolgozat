@@ -78,8 +78,25 @@ public class CalendarDayView extends CalendarFrame {
                 }
             }
         });
+        
+        modifyMenuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {	//Get the selected row and remove it from SQL and local
+                int selectedRow = table.getSelectedRow();
+                if (selectedRow != -1) {
+                	String selectedUid = array[selectedRow][0].toString();
+                	//Func.deleteFromSql(con, selectedUid, Login_main.getUsrn().toLowerCase());
+					ModifyEvent mod = new ModifyEvent();
+					mod.initialize(selectedUid);
+					frm.dispose();
+					/*removeItemFromList(selectedUid);
+					model.removeRow(selectedRow);*/
+                }
+            }
+        });
 	     
 	    popupMenu.add(deleteMenuItem);
+	    popupMenu.add(modifyMenuItem);
 	    table.addMouseListener(new MouseAdapter() {	//Show the popup menu on right click
             @Override
             public void mousePressed(MouseEvent e) {

@@ -61,7 +61,7 @@ public class WeekViewCalendar extends CalendarFrame {
             tableModel.addRow(new Object[7]);
         }
         
-      //Add time column
+        //Add time column
         ArrayList<String> times = new ArrayList<String>();
         for(int f=0; f<25; f++) {
         	times.add(Integer.toString(f)+":00");
