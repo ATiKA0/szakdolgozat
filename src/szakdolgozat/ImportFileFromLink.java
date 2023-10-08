@@ -1,5 +1,6 @@
 package szakdolgozat;
 
+import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -15,18 +16,23 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import javax.swing.JPasswordField;
 
 public class ImportFileFromLink {
 
 	private JFrame frame;
-	private JTextField textLink;
+	protected static JPasswordField textPasswd;
+	protected static JTextField textUsern;
 
 	/**
 	 * Create the application.
 	 * @return 
+	 * @wbp.parser.entryPoint
 	 */
 	public void run() {
-		initialize();
+		EventQueue.invokeLater(new ImportFileFromLink()::initialize);
 	}
 
 	/**
@@ -34,34 +40,45 @@ public class ImportFileFromLink {
 	 */
 	private void initialize() {
 		frame = new JFrame();
-		frame.setBounds(100, 100, 654, 196);
+		frame.setBounds(100, 100, 370, 381);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 		
-		textLink = new JTextField();
-		textLink.setBounds(26, 73, 587, 26);
-		frame.getContentPane().add(textLink);
-		textLink.setColumns(10);
+		JLabel lblNewLabel = new JLabel("Felhasználónév");
+		lblNewLabel.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		lblNewLabel.setBounds(130, 81, 95, 26);
+		frame.getContentPane().add(lblNewLabel);
 		
-		JButton btnImport = new JButton("Importálás");
-		btnImport.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				String link = textLink.getText();
-				DownloadFile(link);
-				frame.setVisible(false);
-				CalendarFrame cf = new CalendarFrame();
-				cf.importCalendar();
-				cf.main(null);
+		textPasswd = new JPasswordField();
+		textPasswd.setBounds(82, 207, 191, 32);
+		frame.getContentPane().add(textPasswd);
+		textPasswd.setColumns(10);
+		
+		JButton btnLogin = new JButton("Bejelentkezés");
+		btnLogin.setFont(new Font("Tahoma", Font.BOLD, 10));
+		btnLogin.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				frame.dispose();
+				HtmlUnitLoginNeptun.main(null);
 			}
 		});
-		btnImport.setBounds(277, 116, 85, 26);
-		frame.getContentPane().add(btnImport);
+		btnLogin.setBounds(115, 267, 125, 43);
+		frame.getContentPane().add(btnLogin);
 		
-		JLabel lblNewLabel = new JLabel("Illessze be a webes naptárakhoz használahtó linket a Neptunból");
-		lblNewLabel.setFont(new Font("Times New Roman", Font.PLAIN, 14));
-		lblNewLabel.setBounds(137, 30, 365, 20);
-		frame.getContentPane().add(lblNewLabel);
+		textUsern = new JTextField();
+		textUsern.setColumns(10);
+		textUsern.setBounds(82, 117, 191, 32);
+		frame.getContentPane().add(textUsern);
+		
+		JLabel lblJelsz = new JLabel("Jelszó");
+		lblJelsz.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		lblJelsz.setBounds(153, 171, 50, 26);
+		frame.getContentPane().add(lblJelsz);
+		
+		JLabel lblNewLabel_1 = new JLabel("Írja be a Neptun bejelentkezési adatait");
+		lblNewLabel_1.setFont(new Font("Times New Roman", Font.PLAIN, 16));
+		lblNewLabel_1.setBounds(57, 28, 242, 20);
+		frame.getContentPane().add(lblNewLabel_1);
 		frame.setVisible(true);
 	}
 	
@@ -69,7 +86,7 @@ public class ImportFileFromLink {
 	 * 
 	 * @param Input link to download
 	 */
-	private void DownloadFile(String link) {
+	protected void DownloadFile(String link) {
 		try {
             // Create a URL object from the provided file URL
             URL url = new URL(link);
@@ -93,7 +110,6 @@ public class ImportFileFromLink {
                     while ((bytesRead = in.read(buffer)) != -1) {
                         out.write(buffer, 0, bytesRead);
                     }
-                    System.out.println("File downloaded successfully to: " + destinationPath);
                 }
             }
         } catch (IOException e) {
