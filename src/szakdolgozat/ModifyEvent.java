@@ -38,7 +38,7 @@ public class ModifyEvent extends CalendarDayView {
 		frmMdosts.setIconImage(Toolkit.getDefaultToolkit().getImage(ModifyEvent.class.getResource("/szakdolgozat/calendar.png")));
 		frmMdosts.addWindowListener(new WindowAdapter() {
 			@Override
-			public void windowClosing(WindowEvent e) {
+			public void windowClosing(WindowEvent e) {	//When the window closing returns to the list view
 				mini.removeTrayIcon();
 				listView();
 			}
@@ -156,7 +156,7 @@ public class ModifyEvent extends CalendarDayView {
 					item.setdtStart(dtstart);
 					item.setdtEnd(dtend);
 					calendarItemList.add(item);
-					try {
+					try {	//Edit the event in SQL based on UID
 						Connection con = Func.connectToSql();
 						Func.editEventSql(con, item.getuid(), Login_main.getUsrn().toLowerCase(),
 								summary, location, dtstart, dtend);
@@ -182,6 +182,11 @@ public class ModifyEvent extends CalendarDayView {
 		mini.notificationCalendar();
 	}
 	
+	/**
+	 * Search for the item in the local list and returns the index of it
+	 * @param uid	: UID to search
+	 * @return	The index of the item in the local list
+	 */
 	private int searchForItem(String uid){
 		for (int i = 0; i < calendarItemList.size(); i++) {
             CalendarItem obj = calendarItemList.get(i);

@@ -144,7 +144,7 @@ public class CalendarFrame {
         		calendarItemList.clear();
         		ImportFileFromLink imp = new ImportFileFromLink();
         		imp.run();
-        		//Frame_main.main(null);
+        		mini.removeTrayIcon();
         		f.dispose();
         	}
         });
@@ -176,8 +176,7 @@ public class CalendarFrame {
         	public void mousePressed(MouseEvent e) {
         		f.dispose();
         		mini.removeTrayIcon();
-        		AddItem additem = new AddItem();
-        		additem.initialize();	//If this new event button pressed, it opens a new window where the usern can add a new event
+        		EventQueue.invokeLater(new AddItem()::initialize);	//If this new event button pressed, it opens a new window where the usern can add a new event
         	}
         });
         f.getContentPane().add(btnNewItem, BorderLayout.SOUTH);
@@ -210,13 +209,11 @@ public class CalendarFrame {
      */
     public void importCalendar(){
     	final String ics = Func.getNewestFile().toString();
-    	System.out.println(ics);
     	System.setProperty("ical4j.unfolding.relaxed", "true");
     	System.setProperty("ical4j.parsing.relaxed", "true");
     	Connection connection = Func.connectToSql();
     	String loggedUser= Login_main.getUsrn().toLowerCase();
     	try {
-			  System.out.println("Database connected!");
 		      CalendarBuilder builder = new CalendarBuilder();
 		      final UnfoldingReader ufrdr =new UnfoldingReader(new FileReader(ics),true);
 		      net.fortuna.ical4j.model.Calendar calendar = builder.build(ufrdr);	//Here is the calendar builder what build a calendar from the parsed ics
@@ -230,8 +227,6 @@ public class CalendarFrame {
 		    	String dtstartf = Func.removeText(ize.getProperties(Property.DTSTART).toString());
 		    	String dtendf = Func.removeText(ize.getProperties(Property.DTEND).toString());
 		    	Func.insertIntoSql(connection, loggedUser, Func.removeText(uid), Func.removeText(summary), Func.removeText(location), Func.convertToNewFormat(dtstartf), Func.convertToNewFormat(dtendf));
-		    	//At the end we create a CalendarItem and add it to the public list
-		  		//calendarItemList.add(new CalendarItem(removeText(uid), convertToNewFormat(dtstartf), convertToNewFormat(dtendf), removeText(location), removeText(summary)));
     	      }
 		      connection.close();
 		      Func.getNewestFile().delete();
@@ -259,7 +254,6 @@ public class CalendarFrame {
 				LocalDateTime dtendf = result.getTimestamp(5).toLocalDateTime();
 				String location = result.getString(3);
 				String summary = result.getString(2);
-				System.out.println(result.getDate(4));
 				calendarItemList.add(new CalendarItem(uid, dtstartf, dtendf, location, summary));
 			}
 			connection.close();

@@ -17,6 +17,8 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.ActionEvent;
 import javax.swing.JPasswordField;
 
@@ -26,18 +28,13 @@ public class ImportFileFromLink {
 	protected static JPasswordField textPasswd;
 	protected static JTextField textUsern;
 
-	/**
-	 * Create the application.
-	 * @return 
-	 * @wbp.parser.entryPoint
-	 */
+
+
 	public void run() {
 		EventQueue.invokeLater(new ImportFileFromLink()::initialize);
 	}
 
-	/**
-	 * Initialize the contents of the frame.
-	 */
+
 	private void initialize() {
 		frame = new JFrame();
 		frame.setBounds(100, 100, 370, 381);
@@ -56,12 +53,23 @@ public class ImportFileFromLink {
 		
 		JButton btnLogin = new JButton("Bejelentkezés");
 		btnLogin.setFont(new Font("Tahoma", Font.BOLD, 10));
-		btnLogin.addActionListener(new ActionListener() {
+		btnLogin.addActionListener(new ActionListener() {	//Launch the HTML Unit class to login to the Neptun
 			public void actionPerformed(ActionEvent e) {
 				frame.dispose();
 				HtmlUnitLoginNeptun.main(null);
 			}
 		});
+		
+		textPasswd.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {	//This do the same what the button do but with an "ENTER" button hit
+				 if (e.getKeyCode()==KeyEvent.VK_ENTER){
+						frame.dispose();
+						HtmlUnitLoginNeptun.main(null);					
+					}
+			 	}
+		});
+		
 		btnLogin.setBounds(115, 267, 125, 43);
 		frame.getContentPane().add(btnLogin);
 		
@@ -82,38 +90,5 @@ public class ImportFileFromLink {
 		frame.setVisible(true);
 	}
 	
-	/**
-	 * 
-	 * @param Input link to download
-	 */
-	protected void DownloadFile(String link) {
-		try {
-            // Create a URL object from the provided file URL
-            URL url = new URL(link);
-
-            // Open a connection to the URL
-            try (InputStream in = url.openStream()) {
-                // Extract the file name from the URL
-                String fileName = Paths.get(url.getPath()).getFileName().toString();
-
-                // Create the destination directory if it doesn't exist
-                Path directory = Paths.get(System.getProperty("user.dir"));
-
-                // Create the full path for the downloaded file
-                Path destinationPath = directory.resolve(fileName);
-
-                // Open a FileOutputStream to save the file
-                try (OutputStream out = new FileOutputStream(destinationPath.toFile())) {
-                    // Transfer data from the URL input stream to the file output stream
-                    byte[] buffer = new byte[1024];
-                    int bytesRead;
-                    while ((bytesRead = in.read(buffer)) != -1) {
-                        out.write(buffer, 0, bytesRead);
-                    }
-                }
-            }
-        } catch (IOException e) {
-            System.err.println("Error downloading file: " + e.getMessage());
-        }
-	}
+	
 }

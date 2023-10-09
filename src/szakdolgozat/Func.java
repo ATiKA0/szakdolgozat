@@ -122,7 +122,6 @@ public class Func {
     	try {
     		String procedureCall = "{call insertIntoSql(?, ?, ?, ?, ?, ?)}";
     		CallableStatement callableStatement = connection.prepareCall(procedureCall);
-    		System.out.println(dtstart);
     		callableStatement.setString(1, uid);
     	    callableStatement.setString(2, summary);
     	    callableStatement.setString(3, location);

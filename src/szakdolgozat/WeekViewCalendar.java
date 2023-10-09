@@ -74,7 +74,7 @@ public class WeekViewCalendar extends CalendarFrame {
         JScrollPane scrollPane = new JScrollPane(weekViewTable);
         frame.getContentPane().add(scrollPane, BorderLayout.CENTER);
         
-        weekViewTable.addMouseListener(new MouseAdapter() {	//This is the listener for clicking on an elemnt in the table. When clicked shows the full information about lesson.
+        weekViewTable.addMouseListener(new MouseAdapter() {	//This is the listener for clicking on an element in the table. When clicked shows the full information about lesson.
             @Override
             public void mouseClicked(MouseEvent arg0) {
                 if (arg0.getClickCount() == 1) { 
@@ -121,6 +121,8 @@ public class WeekViewCalendar extends CalendarFrame {
             }
         }
         weekViewTable.setDefaultRenderer(weekViewTable.getColumnClass(1), new tblCalendarRenderer());
+        mini.trayIcon(frame);
+        mini.notificationCalendar();
         frame.setVisible(true);
     }
     

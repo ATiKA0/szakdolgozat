@@ -57,7 +57,7 @@ public class CalendarDayView extends CalendarFrame {
         firstColumn.setMaxWidth(0);
         firstColumn.setPreferredWidth(0);
         firstColumn.setResizable(false);
-		JPopupMenu popupMenu = new JPopupMenu();	
+		JPopupMenu popupMenu = new JPopupMenu();	//Create the popup menu and add the options to it
         JMenuItem deleteMenuItem = new JMenuItem("Esemény törlése");
         JMenuItem modifyMenuItem = new JMenuItem("Esemény módosítása");
         deleteMenuItem.addActionListener(new ActionListener() {
@@ -81,16 +81,13 @@ public class CalendarDayView extends CalendarFrame {
         
         modifyMenuItem.addActionListener(new ActionListener() {
             @Override
-            public void actionPerformed(ActionEvent e) {	//Get the selected row and remove it from SQL and local
+            public void actionPerformed(ActionEvent e) {	//Get the selected row and pass it to the modify window
                 int selectedRow = table.getSelectedRow();
                 if (selectedRow != -1) {
                 	String selectedUid = array[selectedRow][0].toString();
-                	//Func.deleteFromSql(con, selectedUid, Login_main.getUsrn().toLowerCase());
 					ModifyEvent mod = new ModifyEvent();
 					mod.initialize(selectedUid);
 					frm.dispose();
-					/*removeItemFromList(selectedUid);
-					model.removeRow(selectedRow);*/
                 }
             }
         });
@@ -145,6 +142,10 @@ public class CalendarDayView extends CalendarFrame {
 		return array;
 	}
 
+	/**
+	 * Removes an item from the local list
+	 * @param uid : UID to remove
+	 */
 	private void removeItemFromList(String uid) {
 		for (int i = 0; i < calendarItemList.size(); i++) {
             CalendarItem obj = calendarItemList.get(i);

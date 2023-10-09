@@ -5,7 +5,13 @@ import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.concurrent.CountDownLatch;
 
 import javax.imageio.ImageIO;
@@ -14,6 +20,7 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
@@ -29,8 +36,11 @@ import com.gargoylesoftware.htmlunit.html.HtmlPasswordInput;
 import com.gargoylesoftware.htmlunit.html.HtmlSpan;
 import com.gargoylesoftware.htmlunit.html.HtmlTextInput;
 
+/**
+ * Logs in to the Neptun with HTML Unit and extracts the link for the calendar
+ * @author gluck
+ */
 public class HtmlUnitLoginNeptun extends ImportFileFromLink{
-	//private static CountDownLatch latch = new CountDownLatch(1);
 	private static String captchaText = null;
 	
     public static void main(String[] args) {
@@ -41,7 +51,7 @@ public class HtmlUnitLoginNeptun extends ImportFileFromLink{
     
     private static void createAndShowGUI() {
     	try (WebClient webClient = new WebClient()) {
-            // Disable JavaScript (optional, depending on the website)
+            // Enable JavaScript
             webClient.getOptions().setJavaScriptEnabled(true);
             
             // Set a custom alert handler to automatically accept alerts
@@ -60,15 +70,8 @@ public class HtmlUnitLoginNeptun extends ImportFileFromLink{
             // Find the CAPTCHA image element
             HtmlImage captchaImage = loginPage.getFirstByXPath("//img[@alt='captchaImage']");
 
-            // Download and save the CAPTCHA image locally
-            File captchaImageFile = new File("captcha.png");
-            ImageIO.write(captchaImage.getImageReader().read(0), "png", captchaImageFile);
-
             // Display the CAPTCHA image to the user
-            showCaptchaPopup(captchaImageFile);
-            
-            captchaImageFile.delete();
-
+            showCaptchaPopup(captchaImage);
 			
             // Find the username and password input fields and the login button
             HtmlTextInput usernameField = loginPage.getFirstByXPath("//input[@name='user']");
@@ -93,12 +96,24 @@ public class HtmlUnitLoginNeptun extends ImportFileFromLink{
             
             String spanText = spanElement.getTextContent();
             
+            DownloadFile(spanText);
+            CalendarFrame calendar = new CalendarFrame();
+            calendar.importCalendar();
+            calendar.main(null);
+            
         } catch (Exception e) {
-            e.printStackTrace();
+        	CalendarFrame calendar = new CalendarFrame();
+        	calendar.display();
+        	e.printStackTrace();
+        	JOptionPane.showMessageDialog(null, "Váratlan hiba történet! Kérem próbálja újra!");
         }
     }
     
-    private static void showCaptchaPopup(File captchaImageFile) {
+    /**
+     * Show a popup window withc the captcha picture to the user to solve it
+     * @param captchaImageFile : File for the local captcha image
+     */
+    private static void showCaptchaPopup(HtmlImage captchaImage) {
         JDialog captchaDialog = new JDialog();
         captchaDialog.setTitle("CAPTCHA Popup");
         captchaDialog.setModal(true);
@@ -106,9 +121,11 @@ public class HtmlUnitLoginNeptun extends ImportFileFromLink{
         captchaDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 
         try {
-            // Load the CAPTCHA image using Swing
-            Image captchaSwingImage = new ImageIcon(captchaImageFile.getAbsolutePath()).getImage();
-            JLabel captchaLabel = new JLabel(new ImageIcon(captchaSwingImage));
+            // Load the CAPTCHA image
+        	ImageIcon captchaIcon = new ImageIcon(captchaImage.getImageReader().read(0));
+            JLabel captchaLabel = new JLabel();
+            captchaLabel.setIcon(captchaIcon);
+            
 
             // Create an input field for the user to enter CAPTCHA text
             JTextField captchaTextField = new JTextField(20);
@@ -132,10 +149,48 @@ public class HtmlUnitLoginNeptun extends ImportFileFromLink{
                 }
             });
 
+            captchaDialog.revalidate();
+            captchaLabel.revalidate();
+            captchaLabel.repaint();
             captchaDialog.setVisible(true);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+    
+    /**
+	 * Downloads the ics file from the link extracted from Neptun
+	 * @param link : Input link to download
+	 */
+	protected static void DownloadFile(String link) {
+		try {
+            // Create a URL object from the provided file URL
+            URL url = new URL(link);
+
+            // Open a connection to the URL
+            try (InputStream in = url.openStream()) {
+                // Extract the file name from the URL
+                String fileName = Paths.get(url.getPath()).getFileName().toString();
+
+                // Create the destination directory if it doesn't exist
+                Path directory = Paths.get(System.getProperty("user.dir"));
+
+                // Create the full path for the downloaded file
+                Path destinationPath = directory.resolve(fileName);
+
+                // Open a FileOutputStream to save the file
+                try (OutputStream out = new FileOutputStream(destinationPath.toFile())) {
+                    // Transfer data from the URL input stream to the file output stream
+                    byte[] buffer = new byte[1024];
+                    int bytesRead;
+                    while ((bytesRead = in.read(buffer)) != -1) {
+                        out.write(buffer, 0, bytesRead);
+                    }
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("Error downloading file: " + e.getMessage());
+        }
+	}
 }
 
