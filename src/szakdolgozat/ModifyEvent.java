@@ -31,9 +31,9 @@ public class ModifyEvent extends CalendarDayView {
 	/**
 	 * @wbp.parser.entryPoint
 	 */
-	public void initialize(String uidToEdit) {
+	public void initialize(String ssidToEdit) {
 		System.setProperty("file.encoding","UTF-8");
-		int index = searchForItem(uidToEdit);
+		int index = searchForItem(ssidToEdit);
 		JFrame frmMdosts  = new JFrame();
 		frmMdosts.setIconImage(Toolkit.getDefaultToolkit().getImage(ModifyEvent.class.getResource("/szakdolgozat/calendar.png")));
 		frmMdosts.addWindowListener(new WindowAdapter() {
@@ -179,18 +179,17 @@ public class ModifyEvent extends CalendarDayView {
 		gbc_btnSend.gridy = 9;
 		frmMdosts.getContentPane().add(btnSend, gbc_btnSend);
 		mini.trayIcon(frmMdosts);
-		mini.notificationCalendar();
 	}
 	
 	/**
 	 * Search for the item in the local list and returns the index of it
-	 * @param uid	: UID to search
+	 * @param uid	: Ssid to search
 	 * @return	The index of the item in the local list
 	 */
-	private int searchForItem(String uid){
+	private int searchForItem(String ssid){
 		for (int i = 0; i < calendarItemList.size(); i++) {
             CalendarItem obj = calendarItemList.get(i);
-            if (obj.getuid() == uid) {
+            if (obj.getuid() == ssid) {
             	item = obj;
             	return i;
             }

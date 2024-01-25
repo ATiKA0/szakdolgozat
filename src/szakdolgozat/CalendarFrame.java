@@ -15,6 +15,7 @@ import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -36,6 +37,8 @@ import net.fortuna.ical4j.model.Component;
 import net.fortuna.ical4j.model.Property;
 import net.fortuna.ical4j.model.component.CalendarComponent;
 import java.awt.Toolkit;
+import javax.swing.JLabel;
+import java.awt.Font;
 
 public class CalendarFrame {
 /*
@@ -180,11 +183,14 @@ public class CalendarFrame {
         	}
         });
         f.getContentPane().add(btnNewItem, BorderLayout.SOUTH);
+        
+        JLabel lblNewLabel = new JLabel("Napi/heti nézet a napokra való kattintással érhető el");
+        lblNewLabel.setFont(new Font("Tahoma", Font.BOLD, 11));
+        f.getContentPane().add(lblNewLabel, BorderLayout.NORTH);
         f.pack();
         f.setLocationRelativeTo(null);
         f.setVisible(true);
 		mini.trayIcon(f);	//In the end of the window building the method add a tray icon to the system tray
-		mini.notificationCalendar();	//Start the notification backend process
     }    
 
     /**
@@ -195,10 +201,10 @@ public class CalendarFrame {
     	Iterator<CalendarItem> iter = callist.iterator();	//For the local list we create an iterator
     	while (iter.hasNext()) {	//With a while going trough the whole list
     		CalendarItem event = iter.next();	//The next iterator element is claimed
-    		LocalDateTime calendarItemList = event.getdtStart();	//And from the element we create a date for the evaluator
-    		int y = calendarItemList.getYear();
-    		int m = calendarItemList.getMonthValue()-1;
-    		int d = calendarItemList.getDayOfMonth();
+    		LocalDateTime calendarItemDate = event.getdtStart();	//And from the element we create a date for the evaluator
+    		int y = calendarItemDate.getYear();
+    		int m = calendarItemDate.getMonthValue()-1;
+    		int d = calendarItemDate.getDayOfMonth();
     		evaluator.add(createDate(y, m, d));
     		
     	}
@@ -220,12 +226,12 @@ public class CalendarFrame {
 		      List<CalendarComponent> events = calendar.getComponents(Component.VEVENT);	//It's parsed to multiple VEVENT
 		      Iterator<CalendarComponent> iter = events.iterator();	//This list of VEVENT gets an iterator
 		      while (iter.hasNext()) {	//And with a while we go trough this list and parse it to a calendar component
-		    	CalendarComponent ize = iter.next();
-		    	String location = ize.getProperties(Property.LOCATION).toString();
-		    	String summary = ize.getProperties(Property.SUMMARY).toString();
-		    	String uid = ize.getProperties(Property.UID).toString();
-		    	String dtstartf = Func.removeText(ize.getProperties(Property.DTSTART).toString());
-		    	String dtendf = Func.removeText(ize.getProperties(Property.DTEND).toString());
+		    	CalendarComponent comp = iter.next();
+		    	String location = comp.getProperties(Property.LOCATION).toString();
+		    	String summary = comp.getProperties(Property.SUMMARY).toString();
+		    	String uid = comp.getProperties(Property.UID).toString();
+		    	String dtstartf = Func.removeText(comp.getProperties(Property.DTSTART).toString());
+		    	String dtendf = Func.removeText(comp.getProperties(Property.DTEND).toString());
 		    	Func.insertIntoSql(connection, loggedUser, Func.removeText(uid), Func.removeText(summary), Func.removeText(location), Func.convertToNewFormat(dtstartf), Func.convertToNewFormat(dtendf));
     	      }
 		      connection.close();

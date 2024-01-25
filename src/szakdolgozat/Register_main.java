@@ -8,9 +8,12 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.sql.CallableStatement;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -150,16 +153,23 @@ public class Register_main extends Login_main{
 					success = false;
 				}
 				else {
-					Argon2 argon2 = Argon2Factory.create();
-					String hashedPassword = argon2.hash(10, 65536, 1, passwd);
-					Connection connection = Func.connectToSql();
-					String procedureCall = "{call InsertUserWithTable(?, ?, ?)}";
-		    		CallableStatement callableStatement = connection.prepareCall(procedureCall);
-		    		callableStatement.setString(1, name);
-		    		callableStatement.setString(2, email);
-		    		callableStatement.setString(3, hashedPassword);
-		    		callableStatement.execute();
-					connection.close();	
+					if(emailValid(email)) {
+						Argon2 argon2 = Argon2Factory.create();
+						String hashedPassword = argon2.hash(10, 65536, 1, passwd);
+						Connection connection = Func.connectToSql();
+						String procedureCall = "{call InsertUserWithTable(?, ?, ?)}";
+			    		CallableStatement callableStatement = connection.prepareCall(procedureCall);
+			    		callableStatement.setString(1, name);
+			    		callableStatement.setString(2, email);
+			    		callableStatement.setString(3, hashedPassword);
+			    		callableStatement.execute();
+						connection.close();	
+					}
+					else {
+						JOptionPane.showMessageDialog(null, "Helytelen email cím!");
+						t_email.setText(null);
+						success = false;
+					}
 				}
 			} catch (SQLException e) {
 				throw new IllegalStateException("Cannot connect the database!", e);
@@ -178,17 +188,32 @@ public class Register_main extends Login_main{
 			Boolean exist = false;
 			try {
 				Connection connection = Func.connectToSql();
-				Statement statement = connection.createStatement();
-				ResultSet result = statement.executeQuery("SELECT * FROM login WHERE name = '"+name+"' || email='"+email+"' LIMIT 1;");
+				String procedureCall = "{call register(?, ?)}";
+	    		CallableStatement callableStatement = connection.prepareCall(procedureCall);
+				callableStatement.setString(1, name);
+				callableStatement.setString(2, email);
+				callableStatement.execute();
+				ResultSet result = callableStatement.getResultSet();
 				result.next();
 				if(result.getRow() == 1) {
 					exist = true;
 				}
-				statement.close();
 				connection.close();
 			} catch (SQLException e) {
 				throw new IllegalStateException("Cannot connect the database!", e);
 			}
 			return exist;
 		}
+	
+	/**
+	 * Validate the email address
+	 * @param email : Email address to validate
+	 * @return	True if the email have correct form
+	 */
+	private Boolean emailValid(String email) {
+		String EMAIL_REGEX = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
+		Pattern pattern = Pattern.compile(EMAIL_REGEX);
+        Matcher matcher = pattern.matcher(email);
+        return matcher.matches();
+	}
 	}

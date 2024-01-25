@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -22,6 +23,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.awt.Toolkit;
 
 public class CalendarDayView extends CalendarFrame {
 //This is a Day View window for the calendar using a list view.
@@ -31,6 +33,7 @@ public class CalendarDayView extends CalendarFrame {
 	public void listView() {
 		System.setProperty("file.encoding","UTF-8");
 		JFrame frm = new JFrame();	//Initialize window frame
+		frm.setIconImage(Toolkit.getDefaultToolkit().getImage(CalendarDayView.class.getResource("/szakdolgozat/calendar.png")));
 		frm.addWindowListener(new WindowAdapter() {	//When frame is closed the program goes back to the main calendar window
 			@Override
 			public void windowClosing(WindowEvent e) {		
@@ -66,15 +69,28 @@ public class CalendarDayView extends CalendarFrame {
                 int selectedRow = table.getSelectedRow();
                 if (selectedRow != -1) {
                 	String selectedUid = array[selectedRow][0].toString();
-                	try {
-                		Connection con = Func.connectToSql();
-                		Func.deleteFromSql(con, selectedUid, Login_main.getUsrn().toLowerCase());
-						con.close();
-						removeItemFromList(selectedUid);
-						model.removeRow(selectedRow);
-					} catch (SQLException e1) {
-						e1.printStackTrace();
-					}
+                	Object[] options = {"Igen", "Nem"};
+                    int choice = JOptionPane.showOptionDialog(
+                            frm,
+                            "Biztosan törölni szeretné?",
+                            "Törlés megerősítése",
+                            JOptionPane.YES_NO_OPTION,
+                            JOptionPane.QUESTION_MESSAGE,
+                            null,
+                            options,
+                            options[0]);
+
+                    if (choice == JOptionPane.YES_OPTION) {
+                    	try {
+                    		Connection con = Func.connectToSql();
+                    		Func.deleteFromSql(con, selectedUid, Login_main.getUsrn().toLowerCase());
+    						con.close();
+    						removeItemFromList(selectedUid);
+    						model.removeRow(selectedRow);
+    					} catch (SQLException e1) {
+    						e1.printStackTrace();
+    					}
+                    }
                 }
             }
         });
@@ -88,6 +104,7 @@ public class CalendarDayView extends CalendarFrame {
 					ModifyEvent mod = new ModifyEvent();
 					mod.initialize(selectedUid);
 					frm.dispose();
+					mini.removeTrayIcon();
                 }
             }
         });
@@ -111,7 +128,6 @@ public class CalendarDayView extends CalendarFrame {
 		frm.toFront();	//When open the window opens at foreground
 		frm.requestFocus();	//When open the window requests the focus
 		mini.trayIcon(frm);	//Open the tray icon in the notification center
-		mini.notificationCalendar();	//Trigger the notifications for the events
 		frm.setVisible(true);	//Set the window visible
 	}
 	
@@ -129,7 +145,6 @@ public class CalendarDayView extends CalendarFrame {
 		Object[][] array = new Object[isEqual.size()][];	//Creating the array which is returned to the main table
 		for (CalendarItem c : isEqual)		//This for loop creates the objects from the array list
 		{
-			if(c.getdtStart().toLocalDate().equals(getchosenDate().toLocalDate())) {
 			    array[i] = new Object[5];
 				array[i][0] = c.getuid();
 			    array[i][1] = c.getsummary();
@@ -137,7 +152,6 @@ public class CalendarDayView extends CalendarFrame {
 			    array[i][3] = Func.printFormatDate(c.getdtStart(),true);
 			    array[i][4] = Func.printFormatDate(c.getdtEnd(),true);
 			    i++;
-			}
 		}
 		return array;
 	}

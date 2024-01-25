@@ -1,10 +1,8 @@
 package szakdolgozat;
 
 import java.awt.BorderLayout;
-import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,19 +10,15 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.concurrent.CountDownLatch;
 
-import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
-import javax.swing.WindowConstants;
 
 import com.gargoylesoftware.htmlunit.AlertHandler;
 import com.gargoylesoftware.htmlunit.Page;
@@ -35,6 +29,8 @@ import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.gargoylesoftware.htmlunit.html.HtmlPasswordInput;
 import com.gargoylesoftware.htmlunit.html.HtmlSpan;
 import com.gargoylesoftware.htmlunit.html.HtmlTextInput;
+import java.awt.Font;
+import javax.swing.SwingConstants;
 
 /**
  * Logs in to the Neptun with HTML Unit and extracts the link for the calendar
@@ -49,6 +45,9 @@ public class HtmlUnitLoginNeptun extends ImportFileFromLink{
         });
     }
     
+    /**
+     * @wbp.parser.entryPoint
+     */
     private static void createAndShowGUI() {
     	try (WebClient webClient = new WebClient()) {
             // Enable JavaScript
@@ -124,12 +123,13 @@ public class HtmlUnitLoginNeptun extends ImportFileFromLink{
             // Load the CAPTCHA image
         	ImageIcon captchaIcon = new ImageIcon(captchaImage.getImageReader().read(0));
             JLabel captchaLabel = new JLabel();
+            captchaLabel.setHorizontalAlignment(SwingConstants.CENTER);
             captchaLabel.setIcon(captchaIcon);
             
 
             // Create an input field for the user to enter CAPTCHA text
             JTextField captchaTextField = new JTextField(20);
-            JButton submitButton = new JButton("Submit");
+            JButton submitButton = new JButton("Rendben");
 
             // Create a panel to hold the components
             JPanel panel = new JPanel(new BorderLayout());
@@ -137,7 +137,12 @@ public class HtmlUnitLoginNeptun extends ImportFileFromLink{
             panel.add(captchaTextField, BorderLayout.SOUTH);
             panel.add(submitButton, BorderLayout.EAST);
 
-            captchaDialog.add(panel);
+            captchaDialog.getContentPane().add(panel);
+            
+            JLabel lblNewLabel = new JLabel("Kérem írja be a CAPTCHA-t");
+            lblNewLabel.setHorizontalAlignment(SwingConstants.CENTER);
+            lblNewLabel.setFont(new Font("Tahoma", Font.BOLD, 12));
+            panel.add(lblNewLabel, BorderLayout.NORTH);
             captchaDialog.setLocationRelativeTo(null); // Center the popup window
 
             // Create a custom action listener to capture the user's input and close the dialog

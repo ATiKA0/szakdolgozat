@@ -30,11 +30,17 @@ public class ImportFileFromLink {
 
 
 
+	/**
+	 * @wbp.parser.entryPoint
+	 */
 	public void run() {
 		EventQueue.invokeLater(new ImportFileFromLink()::initialize);
 	}
 
 
+	/**
+	 * @wbp.parser.entryPoint
+	 */
 	private void initialize() {
 		frame = new JFrame();
 		frame.setBounds(100, 100, 370, 381);
@@ -83,7 +89,7 @@ public class ImportFileFromLink {
 		lblJelsz.setBounds(153, 171, 50, 26);
 		frame.getContentPane().add(lblJelsz);
 		
-		JLabel lblNewLabel_1 = new JLabel("Írja be a Neptun bejelentkezési adatait");
+		JLabel lblNewLabel_1 = new JLabel("Írja be a Neptun bejelentkezési adatait!");
 		lblNewLabel_1.setFont(new Font("Times New Roman", Font.PLAIN, 16));
 		lblNewLabel_1.setBounds(57, 28, 242, 20);
 		frame.getContentPane().add(lblNewLabel_1);

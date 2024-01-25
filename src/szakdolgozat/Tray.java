@@ -38,7 +38,7 @@ public class Tray {
 		 	Image icon = Toolkit.getDefaultToolkit().createImage(".//src//szakdolgozat//calendar.png");
 		 	TrayIcon trayIcon = new TrayIcon(icon, "Órarend");
 		 	pubI = trayIcon;
-		 	pubT=tray;
+		 	pubT = tray;
 		 	trayIcon.setImageAutoSize(true);
      		trayIcon.setToolTip("Órarend");
      		
@@ -68,26 +68,30 @@ public class Tray {
      		
      		try {
                 tray.add(trayIcon);
+                notificationCalendar();
             } catch (AWTException e) {
                 System.out.println("TrayIcon could not be added.");
             }
 
 	 }
 
-	public void notificationCalendar() {
+	private void notificationCalendar() {
     	Iterator<CalendarItem> iter = CalendarFrame.calendarItemList.iterator();
     	LocalDateTime date = LocalDateTime.now();
 		Timer time = new Timer();
 		while (iter.hasNext()) {
-			CalendarItem ize = iter.next();
-			LocalDateTime dtstart = ize.getdtStart();
+			CalendarItem event = iter.next();
+			LocalDateTime dtstart = event.getdtStart();
+			LocalDateTime fiveMinutesBeforeStart = dtstart.minusMinutes(5);
+			if(fiveMinutesBeforeStart.compareTo(date) > 0) {
 			TimerTask task = new TimerTask(){
 				@Override
 				public void run() {
-				pubI.displayMessage("Esemény kezdete", "Leírás: "+ize.getsummary()+System.lineSeparator()+"Helyszín: "+ize.getlocation()+System.lineSeparator()+"Kezdés ideje: "+Func.printFormatDate(dtstart, true)+System.lineSeparator()+"Vége: "+Func.printFormatDate(ize.getdtEnd(),true), MessageType.INFO);
+				pubI.displayMessage("Esemény 5 perc múlva!", "Leírás: "+event.getsummary()+System.lineSeparator()+"Helyszín: "+event.getlocation()+System.lineSeparator()+"Kezdés ideje: "+Func.printFormatDate(dtstart, true)+System.lineSeparator()+"Vége: "+Func.printFormatDate(event.getdtEnd(),true), MessageType.INFO);
 				}
 			};
-			if(dtstart.compareTo(date) > 0)time.schedule(task, Func.convertToDate(dtstart));
+			time.schedule(task, Func.convertToDate(fiveMinutesBeforeStart));
+			}
 		}
 	}
 

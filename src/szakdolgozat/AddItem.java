@@ -22,12 +22,16 @@ import javax.swing.JTextField;
 import org.apache.commons.lang3.time.DateUtils;
 
 import com.toedter.calendar.JDateChooser;
+import java.awt.Toolkit;
 
 /**
  * Add a new calendar entry
  * @author gluck
  */
 public class AddItem extends CalendarFrame {
+	private JFrame frame;
+	private JTextField textSummary, textLocation;
+	private JDateChooser dateDtstart, dateDtend;
 
 	/**
 	 * @wbp.parser.entryPoint
@@ -38,7 +42,8 @@ public class AddItem extends CalendarFrame {
 	 */
 	public void initialize() {
 		System.setProperty("file.encoding","UTF-8");
-		JFrame frame  = new JFrame();
+		frame  = new JFrame();
+		frame.setIconImage(Toolkit.getDefaultToolkit().getImage(AddItem.class.getResource("/szakdolgozat/calendar.png")));
 		frame.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
@@ -48,7 +53,7 @@ public class AddItem extends CalendarFrame {
 		});
 		frame.setVisible(true);
 		frame.setResizable(false);
-		frame.setTitle("Új bejegyzés");
+		frame.setTitle("Új esemény");
 		frame.setBounds(100, 100, 360, 450);
 		frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		GridBagLayout gridBagLayout = new GridBagLayout();
@@ -66,7 +71,7 @@ public class AddItem extends CalendarFrame {
 		gbc_lblSummary.gridy = 0;
 		frame.getContentPane().add(lblSummary, gbc_lblSummary);
 		
-		JTextField textSummary = new JTextField();
+		textSummary = new JTextField();
 		GridBagConstraints gbc_textSummary = new GridBagConstraints();
 		gbc_textSummary.fill = GridBagConstraints.BOTH;
 		gbc_textSummary.insets = new Insets(0, 0, 5, 5);
@@ -83,7 +88,7 @@ public class AddItem extends CalendarFrame {
 		gbc_lblLocation.gridy = 2;
 		frame.getContentPane().add(lblLocation, gbc_lblLocation);
 		
-		JTextField textLocation = new JTextField();
+		textLocation = new JTextField();
 		textLocation.setColumns(10);
 		GridBagConstraints gbc_textField = new GridBagConstraints();
 		gbc_textField.fill = GridBagConstraints.BOTH;
@@ -100,7 +105,7 @@ public class AddItem extends CalendarFrame {
 		gbc_lblDtstart.gridy = 4;
 		frame.getContentPane().add(lblDtstart, gbc_lblDtstart);
 		
-		JDateChooser dateDtstart = new JDateChooser();
+		dateDtstart = new JDateChooser();
 		dateDtstart.setDate(new Date());
 		dateDtstart.setDateFormatString("yyyy.MM.dd. HH:mm");
 		GridBagConstraints gbc_dateDtstart = new GridBagConstraints();
@@ -118,7 +123,7 @@ public class AddItem extends CalendarFrame {
 		gbc_lblDtend.gridy = 6;
 		frame.getContentPane().add(lblDtend, gbc_lblDtend);
 		
-		JDateChooser dateDtend = new JDateChooser();
+		dateDtend = new JDateChooser();
 		Date date = DateUtils.addMinutes(new Date(), 1);
 		dateDtend.setDate(date);
 		dateDtend.setDateFormatString("yyyy.MM.dd. HH:mm");
@@ -154,20 +159,7 @@ public class AddItem extends CalendarFrame {
 					textSummary.setText(null); textLocation.setText(null); dateDtstart.setDate(new Date()); dateDtend.setDate(new Date());
 				}
 				else {	//If everything is correct adds to the evaluator list and closes the window.
-					CalendarItem returned = new CalendarItem(getRandomUid(), dtstart, dtend, location, summary);
-					frame.setVisible(false);
-					calendarItemList.add(returned);
-					Date createdDate = createDate(returned.getdtStart().getYear(),returned.getdtStart().getMonthValue()-1,returned.getdtStart().getDayOfMonth());
-					evaluator.add(createdDate);
-					try {
-						Connection connect = Func.connectToSql();
-						Func.insertIntoSql(connect, Login_main.getUsrn().toLowerCase(), returned.getuid(), summary, location, dtstart, dtend);
-						connect.close();
-					} catch (SQLException e1) {
-						e1.printStackTrace();
-					}
-					mini.removeTrayIcon();
-					display();
+					addNewItem(summary, location, dtstart, dtend);
 				}
 			}
 		});
@@ -179,23 +171,45 @@ public class AddItem extends CalendarFrame {
 		gbc_btnSend.gridy = 9;
 		frame.getContentPane().add(btnSend, gbc_btnSend);
 		mini.trayIcon(frame);
-		mini.notificationCalendar();
 	}
 	/**
 	 *	This function generates a random UID for an event and returns as a string.
 	 */
-	private String getRandomUid() {
+	private String getRandomSsid() {
         String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890";
-        StringBuilder rand = new StringBuilder();
+        StringBuilder randstart = new StringBuilder();
+        StringBuilder randend = new StringBuilder();
         Random rnd = new Random();
-        while (rand.length() < 12) {
+        while (randstart.length() < 11) {
             int index = (int) (rnd.nextFloat() * chars.length());
-            rand.append(chars.charAt(index));
+            randstart.append(chars.charAt(index));
         }
-        String Str = rand.toString();
-        Str = Str +"-0000-0000-0000-000000000000";
+        while (randend.length() < 11) {
+            int index = (int) (rnd.nextFloat() * chars.length());
+            randend.append(chars.charAt(index));
+        }
+        String Str = randstart.toString();
+        String Stre = randend.toString();
+        Str = Str +"-0000-0000-0000-"+ Stre;
         return Str;
 
     }
+	
+	private void addNewItem(String summary, String location, LocalDateTime dtstart, LocalDateTime dtend) {
+		CalendarItem returned = new CalendarItem(getRandomSsid(), dtstart, dtend, location, summary);
+		frame.setVisible(false);
+		calendarItemList.add(returned);
+		Date createdDate = createDate(returned.getdtStart().getYear(),returned.getdtStart().getMonthValue()-1,returned.getdtStart().getDayOfMonth());
+		evaluator.add(createdDate);
+		try {
+			Connection connect = Func.connectToSql();
+			Func.insertIntoSql(connect, Login_main.getUsrn().toLowerCase(), returned.getuid(), summary, location, dtstart, dtend);
+			connect.close();
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		}
+		mini.removeTrayIcon();
+		display();
+	}
 
 }

@@ -6,7 +6,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.sql.CallableStatement;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -134,14 +136,17 @@ public class Login_main {
 		Argon2 argon2 = Argon2Factory.create();
 		try {
 			Connection connection = Func.connectToSql();
-			Statement statement = connection.createStatement();
-			ResultSet result = statement.executeQuery("SELECT * FROM login WHERE name = '"+name+"' LIMIT 1;");
-			result.next();
-			if(result.getRow() == 1) {
-				String pass = result.getString(3);
-				valid = argon2.verify(pass, passwd);
+			String procedureCall = "{call login(?)}";
+    		CallableStatement callableStatement = connection.prepareCall(procedureCall);
+			callableStatement.setString(1, name);
+			callableStatement.execute();
+    		ResultSet result = callableStatement.getResultSet();
+			if(result.next()) {				
+				if(result.getRow() == 1) {
+					String pass = result.getString(3);
+					valid = argon2.verify(pass, passwd);
+				}
 			}
-			statement.close();
 			connection.close();
 		} catch (SQLException e) {
 			throw new IllegalStateException("Cannot connect the database!", e);

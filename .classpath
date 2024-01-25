@@ -89,41 +89,6 @@
 	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/Szakdolgozat/szakdolgozat/lib/opentelemetry-sdk-trace-1.28.0.jar"/>
 	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/Szakdolgozat/szakdolgozat/lib/opentelemetry-semconv-1.28.0-alpha.jar"/>
 	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/Szakdolgozat/szakdolgozat/lib/reactive-streams-1.0.4.jar"/>
-	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/Szakdolgozat/szakdolgozat/lib/selenium-api-4.12.1.jar" sourcepath="lib/selenium-api-4.12.1-sources.jar"/>
-	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/Szakdolgozat/szakdolgozat/lib/selenium-chrome-driver-4.12.1.jar"/>
-	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/Szakdolgozat/szakdolgozat/lib/selenium-chrome-driver-4.12.1-sources.jar"/>
-	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/Szakdolgozat/szakdolgozat/lib/selenium-chromium-driver-4.12.1.jar"/>
-	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/Szakdolgozat/szakdolgozat/lib/selenium-chromium-driver-4.12.1-sources.jar"/>
-	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/Szakdolgozat/szakdolgozat/lib/selenium-devtools-v85-4.12.1.jar"/>
-	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/Szakdolgozat/szakdolgozat/lib/selenium-devtools-v85-4.12.1-sources.jar"/>
-	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/Szakdolgozat/szakdolgozat/lib/selenium-devtools-v114-4.12.1.jar"/>
-	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/Szakdolgozat/szakdolgozat/lib/selenium-devtools-v114-4.12.1-sources.jar"/>
-	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/Szakdolgozat/szakdolgozat/lib/selenium-devtools-v115-4.12.1.jar"/>
-	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/Szakdolgozat/szakdolgozat/lib/selenium-devtools-v115-4.12.1-sources.jar"/>
-	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/Szakdolgozat/szakdolgozat/lib/selenium-devtools-v116-4.12.1.jar"/>
-	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/Szakdolgozat/szakdolgozat/lib/selenium-devtools-v116-4.12.1-sources.jar"/>
-	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/Szakdolgozat/szakdolgozat/lib/selenium-edge-driver-4.12.1.jar"/>
-	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/Szakdolgozat/szakdolgozat/lib/selenium-edge-driver-4.12.1-sources.jar"/>
-	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/Szakdolgozat/szakdolgozat/lib/selenium-firefox-driver-4.12.1.jar"/>
-	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/Szakdolgozat/szakdolgozat/lib/selenium-firefox-driver-4.12.1-sources.jar"/>
-	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/Szakdolgozat/szakdolgozat/lib/selenium-http-4.12.1.jar"/>
-	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/Szakdolgozat/szakdolgozat/lib/selenium-http-4.12.1-sources.jar"/>
-	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/Szakdolgozat/szakdolgozat/lib/selenium-ie-driver-4.12.1.jar"/>
-	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/Szakdolgozat/szakdolgozat/lib/selenium-ie-driver-4.12.1-sources.jar"/>
-	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/Szakdolgozat/szakdolgozat/lib/selenium-java-4.12.1.jar"/>
-	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/Szakdolgozat/szakdolgozat/lib/selenium-java-4.12.1-sources.jar"/>
-	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/Szakdolgozat/szakdolgozat/lib/selenium-json-4.12.1.jar"/>
-	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/Szakdolgozat/szakdolgozat/lib/selenium-json-4.12.1-sources.jar"/>
-	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/Szakdolgozat/szakdolgozat/lib/selenium-manager-4.12.1.jar"/>
-	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/Szakdolgozat/szakdolgozat/lib/selenium-manager-4.12.1-sources.jar"/>
-	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/Szakdolgozat/szakdolgozat/lib/selenium-os-4.12.1.jar"/>
-	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/Szakdolgozat/szakdolgozat/lib/selenium-os-4.12.1-sources.jar"/>
-	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/Szakdolgozat/szakdolgozat/lib/selenium-remote-driver-4.12.1.jar"/>
-	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/Szakdolgozat/szakdolgozat/lib/selenium-remote-driver-4.12.1-sources.jar"/>
-	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/Szakdolgozat/szakdolgozat/lib/selenium-safari-driver-4.12.1.jar"/>
-	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/Szakdolgozat/szakdolgozat/lib/selenium-safari-driver-4.12.1-sources.jar"/>
-	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/Szakdolgozat/szakdolgozat/lib/selenium-support-4.12.1.jar"/>
-	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/Szakdolgozat/szakdolgozat/lib/selenium-support-4.12.1-sources.jar"/>
 	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/Szakdolgozat/szakdolgozat/lib/slf4j-api-2.0.7.jar"/>
 	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/Szakdolgozat/szakdolgozat/lib/slf4j-nop-2.0.0-alpha6.jar"/>
 	<classpathentry kind="lib" path="C:/Users/gluck/Desktop/Szakdolgozat/szakdolgozat/lib/threeten-extra-1.5.0.jar"/>

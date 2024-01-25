@@ -122,7 +122,6 @@ public class WeekViewCalendar extends CalendarFrame {
         }
         weekViewTable.setDefaultRenderer(weekViewTable.getColumnClass(1), new tblCalendarRenderer());
         mini.trayIcon(frame);
-        mini.notificationCalendar();
         frame.setVisible(true);
     }
     
